@@ -11,7 +11,6 @@ class ResourceBuilder
 {
     protected $title, $body, $teaser, $ctime, $copyleft;
     protected $files = array();
-    protected $assets = array();
     protected $filesystem;
     protected $router;
     protected $materials = array();
@@ -174,17 +173,11 @@ class ResourceBuilder
             $this->category,
             $this->audience,
             $this->files,
-            $this->assets,
             $this->filesystem,
             $this->router,
             $this->materials,
             $this->url,
             $this->data
         );
-    }
-
-    public function addAssets($assets)
-    {
-        $this->assets = array_merge($this->assets, $assets);
     }
 }

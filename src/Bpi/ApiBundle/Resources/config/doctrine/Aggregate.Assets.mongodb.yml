@@ -1,0 +1,4 @@
+Bpi\ApiBundle\Domain\Aggregate\Assets:
+  type: embeddedDocument
+  embedMany:
+    collection: ~

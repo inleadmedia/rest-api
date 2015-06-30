@@ -14,4 +14,26 @@ class Authorship implements IParam
     {
       return $this->authorship;
     }
+
+    /**
+     * Set authorship
+     *
+     * @param string $authorship
+     * @return self
+     */
+    public function setAuthorship($authorship)
+    {
+        $this->authorship = $authorship;
+        return $this;
+    }
+
+    /**
+     * Get authorship
+     *
+     * @return string $authorship
+     */
+    public function getAuthorship()
+    {
+        return $this->authorship;
+    }
 }

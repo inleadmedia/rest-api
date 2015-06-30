@@ -31,4 +31,26 @@ class Copyleft implements IValueObject
         //TODO: Temporary hardcoded translation.
         return 'Oprindeligt skrevet af ' . implode(', ', $this->copyrighters) . '.';
     }
+
+    /**
+     * Set copyrighters
+     *
+     * @param hash $copyrighters
+     * @return self
+     */
+    public function setCopyrighters($copyrighters)
+    {
+        $this->copyrighters = $copyrighters;
+        return $this;
+    }
+
+    /**
+     * Get copyrighters
+     *
+     * @return hash $copyrighters
+     */
+    public function getCopyrighters()
+    {
+        return $this->copyrighters;
+    }
 }

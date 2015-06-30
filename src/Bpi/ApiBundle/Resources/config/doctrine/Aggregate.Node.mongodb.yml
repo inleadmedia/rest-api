@@ -53,3 +53,9 @@ Bpi\ApiBundle\Domain\Aggregate\Node:
       reference: true
       type: one
       targetDocument: Bpi\ApiBundle\Domain\Entity\Audience
+
+    assets:
+      embedded: true
+      type: one
+      strategy: pushAll
+      targetDocument: Bpi\ApiBundle\Domain\Aggregate\Assets

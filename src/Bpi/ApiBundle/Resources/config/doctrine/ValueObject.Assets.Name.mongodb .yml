@@ -1,0 +1,5 @@
+Bpi\ApiBundle\Domain\ValueObject\Assets\Height:
+  type: embeddedDocument
+  fields:
+    Height:
+      type: string

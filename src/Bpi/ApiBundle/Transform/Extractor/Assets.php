@@ -2,7 +2,7 @@
 namespace Bpi\ApiBundle\Transform\Extractor;
 
 use Bpi\RestMediaTypeBundle\Document;
-use Bpi\ApiBundle\Domain\Aggregate\Params as DomainParams;
+use Bpi\ApiBundle\Domain\Aggregate\Params as DomainAssets;
 use Bpi\ApiBundle\Domain\ValueObject\Param\Authorship;
 use Bpi\ApiBundle\Domain\ValueObject\Param\Editable;
 
@@ -31,11 +31,8 @@ class Params implements IExtractor
      */
     public function extract()
     {
-        echo "<pre>";
-        print_r(1);
-        die();
-        $entity = $this->doc->getEntity('params');
-        $params = new DomainParams();
+        $entity = $this->doc->getEntity('assets');
+        $assets = new DomainAssets();
         $params->add(new Editable($entity->property('editable')->getValue()));
         $params->add(new Authorship($entity->property('authorship')->getValue()));
         return $params;

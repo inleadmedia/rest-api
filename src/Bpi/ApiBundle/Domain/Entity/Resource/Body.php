@@ -1,5 +1,6 @@
 <?php
 namespace Bpi\ApiBundle\Domain\Entity\Resource;
+use Bpi\ApiBundle\Domain\Entity\File;
 
 class Body
 {
@@ -89,52 +90,33 @@ class Body
 
     public function rebuildInlineAssets()
     {
-        // Rebuild images
-        $url = $this->router->generate('index', array(), true) . 'images/image.png';
-
-        /*
-        $images = $this->dom->getElementsByTagName('img');
-        foreach ($images as $img) {
-            $src = $img->getAttributeNode('src')->value;
-            $ext = pathinfo(parse_url($src, PHP_URL_PATH), PATHINFO_EXTENSION);
-
-            if ($src == $url) {
-                continue;
-            }
-
-            // Download file and save to db.
-            $filename = md5($src.microtime());
-            $file = $this->filesystem->createFile($filename);
-            // @todo Download files in a proper way.
-            $file->setContent(file_get_contents($src));
-
-            // Build URL for new image and replace img src.
-            $this->assets[] = array('file'=>$file->getKey(), 'type'=>'embedded', 'extension'=>$ext);
-
-            $img->setAttribute('src', $url);
-        }
-        */
-        preg_match_all('/<img[^>]+>/im', $this->dom, $matches, PREG_SET_ORDER);
-
+        preg_match_all('/<img[^>]+>/im', $this->dom , $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
 
             preg_match('/src=\"([^"]+)\"/i', $match[0], $src);
+            preg_match('/alt=\"([^"]+)\"/i', $match[0], $alt);
+            preg_match('/width=\"([^"]+)\"/i', $match[0], $width);
+            preg_match('/height=\"([^"]+)\"/i', $match[0], $height);
 
-            $srcFile = $src[1];
-            $ext = pathinfo(parse_url($srcFile, PHP_URL_PATH), PATHINFO_EXTENSION);
+            $file = array();
+            $pathinfo = pathinfo(parse_url($src[1], PHP_URL_PATH));
 
-            // Download file and save to db.
-            $filename = md5($src.microtime());
-            $file = $this->filesystem->createFile($filename);
-            // @todo Download files in a proper way.
-            $file->setContent(file_get_contents($srcFile));
+            $file['path'] = $src[1];
+            $file['extension'] = $pathinfo['extension'];
+            $file['name'] = $pathinfo['filename'];
+            $file['alt'] = $alt[1];
+            $file['width'] = $width[1];
+            $file['height'] = $height[1];
+            $file['type'] = 'body';
 
-            // Build URL for new image and replace img src.
-            $this->assets[] = array('file'=>$file->getKey(), 'type'=>'embedded', 'extension'=>$ext);
+            $bpi_file = new \Bpi\ApiBundle\Domain\Entity\File($file);
+            $bpi_file->createFile();
 
-            $tag = str_replace($srcFile, $url, $match[0]);
+            $this->assets[] = $bpi_file;
 
-            $this->dom = str_replace($match[0], $tag, $this->dom);
+            $tag = str_replace( $file['path'], $bpi_file->getPath(), $match[0]);
+
+            $this->dom = str_replace($match[0], $tag,$this->dom);
         }
 
     }

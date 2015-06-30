@@ -85,4 +85,56 @@ class Profile implements IPresentable
             ));
         }
     }
+
+    /**
+     * Set yearwheel
+     *
+     * @param Bpi\ApiBundle\Domain\ValueObject\Yearwheel $yearwheel
+     * @return self
+     */
+    public function setYearwheel(\Bpi\ApiBundle\Domain\ValueObject\Yearwheel $yearwheel)
+    {
+        $this->yearwheel = $yearwheel;
+        return $this;
+    }
+
+    /**
+     * Get yearwheel
+     *
+     * @return Bpi\ApiBundle\Domain\ValueObject\Yearwheel $yearwheel
+     */
+    public function getYearwheel()
+    {
+        return $this->yearwheel;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param $tag
+     */
+    public function addTag($tag)
+    {
+        $this->tags[] = $tag;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param $tag
+     */
+    public function removeTag($tag)
+    {
+        $this->tags->removeElement($tag);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return Doctrine\Common\Collections\Collection $tags
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
 }

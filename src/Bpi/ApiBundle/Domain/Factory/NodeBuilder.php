@@ -3,6 +3,7 @@ namespace Bpi\ApiBundle\Domain\Factory;
 
 use Bpi\ApiBundle\Domain\Aggregate\Node;
 use Bpi\ApiBundle\Domain\Aggregate\Params;
+use Bpi\ApiBundle\Domain\Aggregate\Assets;
 use Bpi\ApiBundle\Domain\Entity\Profile;
 use Bpi\ApiBundle\Domain\Entity\Resource;
 use Bpi\ApiBundle\Domain\Entity\Author;
@@ -17,6 +18,7 @@ class NodeBuilder
     protected $profile;
     protected $resource;
     protected $params;
+    protected $assets;
 
     protected $category;
     protected $audience;
@@ -71,6 +73,18 @@ class NodeBuilder
     }
 
     /**
+     *
+     * @param \Bpi\ApiBundle\Domain\Aggregate\Assets $Assets
+     * @return \Bpi\ApiBundle\Domain\Factory\NodeBuilder
+     */
+    public function assets(Assets $assets)
+    {
+        $this->assets = $assets;
+        return $this;
+    }
+
+
+    /**
      * @param  Category $category
      * @return \Bpi\ApiBundle\Domain\Factory\NodeBuilder
      */
@@ -109,7 +123,10 @@ class NodeBuilder
         if (is_null($this->params)) {
             throw new \RuntimeException('Invalid state: Params is required');
         }
-
-        return new Node($this->author, $this->resource, $this->profile, $this->category, $this->audience, $this->tags, $this->params);
+        $inline = $this->resource->getBody()->getAssets();
+        foreach ($inline as $asset) {
+            $this->assets->addElem($asset);
+        }
+        return new Node($this->author, $this->resource, $this->profile, $this->category, $this->audience, $this->tags, $this->params, $this->assets);
     }
 }

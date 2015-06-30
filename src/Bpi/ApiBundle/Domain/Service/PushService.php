@@ -12,6 +12,7 @@ use Bpi\ApiBundle\Domain\Entity\Resource;
 use Bpi\ApiBundle\Domain\Entity\Category;
 use Bpi\ApiBundle\Domain\Entity\Audience;
 use Bpi\ApiBundle\Domain\Aggregate\Params;
+use Bpi\ApiBundle\Domain\Aggregate\Assets;
 use Bpi\ApiBundle\Domain\ValueObject\Copyleft;
 use Bpi\ApiBundle\Domain\ValueObject\NodeId;
 use Bpi\ApiBundle\Domain\ValueObject\Param\Authorship;
@@ -62,7 +63,8 @@ class PushService
         $category,
         $audience,
         Profile $profile,
-        Params $params
+        Params $params,
+        Assets $assets
     ) {
         $authorship = $params->filter(
             function ($e) {
@@ -86,7 +88,8 @@ class PushService
           ->author($author)
           ->profile($profile)
           ->resource($resource)
-          ->params($params);
+          ->params($params)
+          ->assets($assets);
 
         // Set default category.
         if (empty($category)) {
@@ -107,6 +110,7 @@ class PushService
             array('audience' => $audience)
         );
         $builder->audience($audience);
+
 
         $node = $builder->build();
         $log = new History($node, $author->getAgencyId(), new \DateTime(), 'push');
@@ -151,11 +155,11 @@ class PushService
      * @param  \Bpi\ApiBundle\Domain\Aggregate\Params $params
      * @return \Bpi\ApiBundle\Domain\Aggregate\Node
      */
-    public function pushRevision(NodeId $node_id, Author $author, ResourceBuilder $builder, Params $params)
+    public function pushRevision(NodeId $node_id, Author $author, ResourceBuilder $builder, Params $params, Assets $assets)
     {
         $node = $this->manager->getRepository('BpiApiBundle:Aggregate\Node')->findOneById($node_id->id());
 
-        $revision = $node->createRevision($author, $builder->build(), $params);
+        $revision = $node->createRevision($author, $builder->build(), $params, $assets);
 
         $this->manager->persist($revision);
         $this->manager->flush();

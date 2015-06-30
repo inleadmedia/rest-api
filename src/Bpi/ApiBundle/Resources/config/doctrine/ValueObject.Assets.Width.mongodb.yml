@@ -1,0 +1,5 @@
+Bpi\ApiBundle\Domain\ValueObject\Assets\Width:
+  type: embeddedDocument
+  fields:
+    width:
+      type: string

@@ -1,0 +1,5 @@
+Bpi\ApiBundle\Domain\ValueObject\Assets\Alt:
+  type: embeddedDocument
+  fields:
+    alt:
+      type: string
