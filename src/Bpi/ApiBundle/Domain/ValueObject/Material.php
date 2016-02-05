@@ -17,7 +17,7 @@ class Material implements IValueObject
     public static function create($fully_qualified_code)
     {
         // @TODO: detect ISBN and other types
-        if (!preg_match('~^\d+:.+~', $fully_qualified_code)) {
+        if (!preg_match('~^(\d+)\-([^\:]+)\:(.+)~', $fully_qualified_code)) {
             throw new \InvalidArgumentException("Incorrect material number: ". $fully_qualified_code);
         }
 
