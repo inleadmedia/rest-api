@@ -157,8 +157,9 @@ class File
         }
         curl_close($ch);
 
-        if ($content === FALSE)
-            throw new Exception("Can't download file");
+        if ($content === FALSE) {
+            throw new \Exception("Can't download file");
+        }
 
         $file->setContent($content);
 
