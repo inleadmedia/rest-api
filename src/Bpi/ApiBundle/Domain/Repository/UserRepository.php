@@ -55,22 +55,24 @@ class UserRepository extends DocumentRepository
     /**
      * Get list of users.
      *
+     * @param $search - the value to search for
      * @param $agencyId - optional filter
      * @return ArrayCollection
      */
-    public function getListAutocompletions($userIternalName, $agencyId = null)
+    public function getListAutocompletions($search, $agencyId = null)
     {
         $qb = $this->createQueryBuilder('Entity\User');
 
         if ($agencyId) {
             $qb->addOr($qb->expr()->field('userAgency.id')->equals($agencyId));
         }
-        if ($userIternalName) {
-            $mongoReg = new \MongoRegex('/.*' . $userIternalName . '.*/');
+        if ($search) {
+            $mongoReg = new \MongoRegex('/.*' . $search . '.*/');
             $qb
                 ->addOr($qb->expr()->field('userFirstName')->equals($mongoReg))
                 ->addOr($qb->expr()->field('userLastName')->equals($mongoReg))
                 ->addOr($qb->expr()->field('internalUserName')->equals($mongoReg))
+                ->addOr($qb->expr()->field('email')->equals($mongoReg))
             ;
         }
 
