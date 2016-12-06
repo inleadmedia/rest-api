@@ -38,6 +38,9 @@ class Resource implements IPresentable
     protected $category;
     protected $audience;
 
+    protected $url;
+    protected $data;
+
     /**
      *
      * @param string $title
@@ -62,7 +65,9 @@ class Resource implements IPresentable
         array $assets = array(),
         Filesystem $filesystem,
         $router,
-        array $materials = array()
+        array $materials = array(),
+        $url,
+        $data
     )
     {
         $this->title = $title;
@@ -78,6 +83,8 @@ class Resource implements IPresentable
         $this->materials = $materials;
         $this->category = $category;
         $this->audience = $audience;
+        $this->url = $url;
+        $this->data = $data;
     }
 
     /**
@@ -145,6 +152,8 @@ class Resource implements IPresentable
         $entity->addProperty($document->createProperty('teaser', 'string', $this->teaser));
         $entity->addProperty($document->createProperty('creation', 'dateTime', $this->ctime));
         $entity->addProperty($document->createProperty('type', 'string', $this->type));
+        $entity->addProperty($document->createProperty('url', 'string', $this->url));
+        $entity->addProperty($document->createProperty('data', 'string', $this->data));
 
         foreach ($this->materials as $material)
         {
@@ -222,5 +231,49 @@ class Resource implements IPresentable
     public function addAsset($asset)
     {
         $this->assets[] = $asset;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return self
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string $body
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /*
+     * Set data
+     *
+     * @param string $data
+     * @return self
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /*
+     * Get data
+     *
+     * @return string $body
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }
