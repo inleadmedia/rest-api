@@ -38,7 +38,6 @@
         "doctrine/mongodb": "1.1.6",
         "doctrine/mongodb-odm-bundle": "3.0.*",
         "doctrine/doctrine-fixtures-bundle": "dev-master",
-        "stof/doctrine-extensions-bundle": "dev-master",
         "knplabs/knp-gaufrette-bundle": "0.2.*@dev",
         "knplabs/knp-markdown-bundle": "1.2.*@dev",
         "knplabs/knp-paginator-bundle": "2.3.2",

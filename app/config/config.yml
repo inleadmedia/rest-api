@@ -123,12 +123,6 @@ doctrine_mongodb:
         default:
             mappings:
                 BpiApiBundle: { type: yml, prefix: Bpi\ApiBundle\Domain }
-                gedmo_tree:
-                    type: yml
-                    prefix: Gedmo\Tree\Document
-                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Document"
-                    alias: GedmoTree # this one is optional and will default to the name set for the mapping
-                    is_bundle: false
 
 mongo_db_migrations:
     collection_name: "migration_versions"
@@ -137,12 +131,6 @@ mongo_db_migrations:
     script_dir_name: "%kernel.root_dir%/scripts"
     name: "Bpi APIbundle MongoDB Migrations"
     namespace: "Bpi\ApiBundle\Migrations\MongoDB"
-
-stof_doctrine_extensions:
-    default_locale: en_US
-    mongodb:
-        default:
-            tree: true
 
 nelmio_api_doc: ~
 

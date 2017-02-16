@@ -25,7 +25,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Bpi\ApiBundle\BpiApiBundle(),
             new Bpi\RestMediaTypeBundle\BpiRestMediaTypeBundle(),
-            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new Bpi\AdminBundle\BpiAdminBundle(),
