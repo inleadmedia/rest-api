@@ -23,6 +23,7 @@ class Resource implements IPresentable
 
     protected $type = 'article';
 
+    protected $assets = array();
 
     protected $copyleft;
 
@@ -48,6 +49,7 @@ class Resource implements IPresentable
      * @param Copyleft $copyleft
      * @param \DateTime $ctime
      * @param array $files
+     * @param array $assets
      * @param \Gaufrette\Filesystem $filesystem
      * @param object $router
      */
@@ -60,13 +62,13 @@ class Resource implements IPresentable
         $category,
         $audience,
         array $files = null,
+        array $assets = array(),
         Filesystem $filesystem,
         $router,
         array $materials = array(),
         $url,
         $data
-    )
-    {
+    ) {
         $this->title = $title;
         $this->body = new Resource\Body($body, $filesystem, $router);
         $this->body->rebuildInlineAssets();
@@ -74,6 +76,7 @@ class Resource implements IPresentable
         $this->copyleft = $copyleft;
         $this->ctime = $ctime;
         $this->regenerateHash();
+        $this->assets = array_merge($assets, $this->body->getAssets());
         $this->filesystem = $filesystem;
         $this->router = $router;
         $this->materials = $materials;
@@ -90,9 +93,10 @@ class Resource implements IPresentable
      * @param  AgencyID $syndicator
      * @return void
      */
-    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator) {
+    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator)
+    {
         $syndication_materials = array();
-        foreach($this->materials as $material) {
+        foreach ($this->materials as $material) {
             if ($material->isLibraryEquals($owner)) {
                 $syndication_materials[] = $material->reassignToAgency($syndicator);
             } else {
@@ -111,12 +115,14 @@ class Resource implements IPresentable
      */
     public function isSimilar(Resource $resource)
     {
-        if ($this->body == $resource->body)
+        if ($this->body == $resource->body) {
             return true;
+        }
 
         similar_text(strip_tags($this->body), strip_tags($resource->body), $similarity);
-        if ($similarity > 50)
+        if ($similarity > 50) {
             return true;
+        }
 
         return false;
     }
@@ -143,8 +149,7 @@ class Resource implements IPresentable
         $entity->addProperty($document->createProperty('url', 'string', $this->url));
         $entity->addProperty($document->createProperty('data', 'string', $this->data));
 
-        foreach ($this->materials as $material)
-        {
+        foreach ($this->materials as $material) {
             $entity->addProperty($document->createProperty('material', 'string', (string) $material));
         }
     }
@@ -216,144 +221,9 @@ class Resource implements IPresentable
         $this->teaser = $teaser;
     }
 
-    /**
-     * Set body
-     *
-     * @param string $body
-     * @return self
-     */
-    public function setBody($body)
+    public function addAsset($asset)
     {
-        $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * Get body
-     *
-     * @return string $body
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * Set ctime
-     *
-     * @param date $ctime
-     * @return self
-     */
-    public function setCtime($ctime)
-    {
-        $this->ctime = $ctime;
-        return $this;
-    }
-
-    /**
-     * Get ctime
-     *
-     * @return date $ctime
-     */
-    public function getCtime()
-    {
-        return $this->ctime;
-    }
-
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return self
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string $type
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set hash
-     *
-     * @param string $hash
-     * @return self
-     */
-    public function setHash($hash)
-    {
-        $this->hash = $hash;
-        return $this;
-    }
-
-    /**
-     * Get hash
-     *
-     * @return string $hash
-     */
-    public function getHash()
-    {
-        return $this->hash;
-    }
-
-    /**
-     * Set copyleft
-     *
-     * @param Bpi\ApiBundle\Domain\ValueObject\Copyleft $copyleft
-     * @return self
-     */
-    public function setCopyleft(\Bpi\ApiBundle\Domain\ValueObject\Copyleft $copyleft)
-    {
-        $this->copyleft = $copyleft;
-        return $this;
-    }
-
-    /**
-     * Get copyleft
-     *
-     * @return Bpi\ApiBundle\Domain\ValueObject\Copyleft $copyleft
-     */
-    public function getCopyleft()
-    {
-        return $this->copyleft;
-    }
-
-    /**
-     * Add material
-     *
-     * @param Bpi\ApiBundle\Domain\ValueObject\Material $material
-     */
-    public function addMaterial(\Bpi\ApiBundle\Domain\ValueObject\Material $material)
-    {
-        $this->materials[] = $material;
-    }
-
-    /**
-     * Remove material
-     *
-     * @param Bpi\ApiBundle\Domain\ValueObject\Material $material
-     */
-    public function removeMaterial(\Bpi\ApiBundle\Domain\ValueObject\Material $material)
-    {
-        $this->materials->removeElement($material);
-    }
-
-    /**
-     * Get materials
-     *
-     * @return Doctrine\Common\Collections\Collection $materials
-     */
-    public function getMaterials()
-    {
-        return $this->materials;
+        $this->assets[] = $asset;
     }
 
     /**
@@ -398,5 +268,21 @@ class Resource implements IPresentable
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * @return \Bpi\ApiBundle\Domain\Entity\Resource\Body
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets()
+    {
+        return $this->assets;
     }
 }

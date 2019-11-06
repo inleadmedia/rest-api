@@ -1,4 +1,3 @@
-
 Bpi\ApiBundle\Domain\Aggregate\Agency:
   collection: Agency
   repositoryClass: Bpi\ApiBundle\Domain\Repository\AgencyRepository

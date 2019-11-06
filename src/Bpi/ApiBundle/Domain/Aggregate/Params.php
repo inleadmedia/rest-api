@@ -36,34 +36,4 @@ class Params
     {
         return $this->collection->filter($p);
     }
-
-    /**
-     * Add collection
-     *
-     * @param $collection
-     */
-    public function addCollection($collection)
-    {
-        $this->collection[] = $collection;
-    }
-
-    /**
-     * Remove collection
-     *
-     * @param $collection
-     */
-    public function removeCollection($collection)
-    {
-        $this->collection->removeElement($collection);
-    }
-
-    /**
-     * Get collection
-     *
-     * @return Doctrine\Common\Collections\Collection $collection
-     */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
 }

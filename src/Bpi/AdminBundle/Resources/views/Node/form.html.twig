@@ -31,13 +31,6 @@
             <h3>Node vocabularies</h3>
             {{ form_row(form.category) }}
             {{ form_row(form.audience) }}
-
-            <p>Tags</p>
-            <ul class="tags" data-prototype="{{ form_widget(form.tags.vars.prototype)|e }}">
-                {% for tag in form.tags %}
-                    <li>{{ form_widget(tag.tag) }}</li>
-                {% endfor %}
-            </ul>
         </div>
     </div>
     <div class="row">
@@ -45,8 +38,8 @@
             <h3>Node assets</h3>
             {% if assets.images is defined %}
                 {% for image in assets.images %}
-                    <a href="{{ image.path }}">
-                        <img src="{{ image.path }}" alt="{{ image.title }}">
+                    <a href="{{ image.url }}">
+                        <img src="{{ image.url }}">
                     </a>
                 {% endfor %}
             {% endif %}

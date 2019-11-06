@@ -1,5 +1,0 @@
-Bpi\ApiBundle\Domain\ValueObject\Assets\External:
-  type: embeddedDocument
-  fields:
-    external:
-      type: string

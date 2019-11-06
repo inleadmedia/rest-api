@@ -104,33 +104,7 @@ class Author implements \Bpi\ApiBundle\Transform\IPresentable
     }
 
     /**
-     * Set agencyId
-     *
-     * @param string $agencyId
-     * @return self
-     */
-    public function setAgencyId($agencyId)
-    {
-        $this->agency_id = $agencyId;
-        return $this;
-    }
-
-    /**
-     * Set firstname
-     *
-     * @param string $firstname
-     * @return self
-     */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = $firstname;
-        return $this;
-    }
-
-    /**
-     * Get firstname
-     *
-     * @return string $firstname
+     * @return string
      */
     public function getFirstname()
     {
@@ -138,21 +112,7 @@ class Author implements \Bpi\ApiBundle\Transform\IPresentable
     }
 
     /**
-     * Set lastname
-     *
-     * @param string $lastname
-     * @return self
-     */
-    public function setLastname($lastname)
-    {
-        $this->lastname = $lastname;
-        return $this;
-    }
-
-    /**
-     * Get lastname
-     *
-     * @return string $lastname
+     * @return null|string
      */
     public function getLastname()
     {

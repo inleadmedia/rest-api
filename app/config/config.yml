@@ -24,7 +24,7 @@ services:
       class: Doctrine\MongoDB\Connection
       factory_service: doctrine_mongodb.odm.default_connection
       factory_method: selectDatabase
-      arguments: ["bpi"]
+      arguments: ["%mongodb_db%"]
     bpi.gridfs.db:
         class: Doctrine\MongoDB\Database
         factory_service: bpi.gridfs.conn
@@ -112,14 +112,6 @@ doctrine_mongodb:
         default:
             mappings:
                 BpiApiBundle: { type: yml, prefix: Bpi\ApiBundle\Domain }
-
-mongo_db_migrations:
-    collection_name: "migration_versions"
-    database_name: "bpi"
-    dir_name: "%kernel.root_dir%/../src/Bpi/ApiBundle/Resources/config/Migrations/MongoDB"
-    script_dir_name: "%kernel.root_dir%/scripts"
-    name: "Bpi APIbundle MongoDB Migrations"
-    namespace: "Bpi\ApiBundle\Migrations\MongoDB"
 
 nelmio_api_doc: ~
 

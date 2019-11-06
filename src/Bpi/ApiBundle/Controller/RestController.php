@@ -154,27 +154,39 @@ class RestController extends FOSRestController
             foreach ($filter as $field => $value) {
                 if ($field == 'category' && !empty($value)) {
                     foreach ($value as $val) {
-                        $category = $this->getRepository('BpiApiBundle:Entity\Category')->findOneBy(array('category' => $val));
-                        if (empty($category)) {continue; }
+                        $category = $this
+                            ->getRepository('BpiApiBundle:Entity\Category')
+                            ->findOneBy(array('category' => $val));
+                        if (empty($category)) {
+                            continue;
+                        }
                         $filters['category'][] = $category;
                     }
                 }
                 if ($field == 'audience' && !empty($value)) {
                     foreach ($value as $val) {
-                        $audience = $this->getRepository('BpiApiBundle:Entity\Audience')->findOneBy(array('audience' => $val));
-                        if (empty($audience)) {continue; }
+                        $audience = $this
+                            ->getRepository('BpiApiBundle:Entity\Audience')
+                            ->findOneBy(array('audience' => $val));
+                        if (empty($audience)) {
+                            continue;
+                        }
                         $filters['audience'][] = $audience;
                     }
                 }
                 if ($field == 'agency_id' && !empty($value)) {
                     foreach ($value as $val) {
-                        if (empty($val)) {continue; }
+                        if (empty($val)) {
+                            continue;
+                        }
                         $filters['agency_id'][] = $val;
                     }
                 }
                 if ($field == 'author' && !empty($value)) {
                     foreach ($value as $val) {
-                        if (empty($val)) {continue; }
+                        if (empty($val)) {
+                            continue;
+                        }
                         $filters['author'][] = $val;
                     }
                 }
@@ -190,8 +202,9 @@ class RestController extends FOSRestController
         $node_query->filter($availableFacets->nodeIds);
 
         if (false !== ($sort = $this->getRequest()->query->get('sort', false))) {
-            foreach ($sort as $field => $order)
+            foreach ($sort as $field => $order) {
                 $node_query->sort($field, $order);
+            }
         } else {
             $node_query->sort('pushed', 'desc');
         }
@@ -199,7 +212,7 @@ class RestController extends FOSRestController
         $node_collection = $this->getRepository('BpiApiBundle:Aggregate\Node')->findByNodesQuery($node_query);
         $agency_id = new AgencyId($this->getUser()->getAgencyId()->id());
         foreach ($node_collection as $node) {
-          $node->defineAgencyContext($agency_id);
+            $node->defineAgencyContext($agency_id);
         }
 
         $document = $this->get("bpi.presentation.transformer")->transformMany($node_collection);
@@ -215,9 +228,6 @@ class RestController extends FOSRestController
                     )
                 );
                 $hypermedia->addLink($document->createLink('collection', $router->generate('list', array(), true)));
-
-                // @todo: implementation
-                //$hypermedia->addLink($document->createLink('assets', $router->generate('put_node_asset', array('node_id' => $e->property('id')->getValue(), 'filename' => ''), true)));
             }
         );
 
@@ -483,7 +493,7 @@ class RestController extends FOSRestController
         }
 
         // request validation
-        $violations = $this->_isValidForPushNode($request->request->all());
+        $violations = $this->isValidForPushNode($request->request->all());
         if (count($violations)) {
             return $this->createErrorView((string) $violations, 422);
         }
@@ -512,13 +522,25 @@ class RestController extends FOSRestController
         }
 
         // Download files and add them to resource
-        $assets = new \Bpi\ApiBundle\Domain\Aggregate\Assets();
-        $data = $request->get('assets', array());
-        foreach ($data as $asset) {
-            $bpi_file = new \Bpi\ApiBundle\Domain\Entity\File($asset);
-            $bpi_file->createFile();
-            $assets->addElem($bpi_file);
+        $images = $request->get('assets', array());
+        foreach ($images as $image) {
+            $imagePath = $image['path'];
+            $filename = md5($image['name'] . time());
+            $file = $filesystem->createFile($filename);
+            // @todo Download files in a proper way.
+            $file->setContent(file_get_contents($imagePath));
+            $assets[] = array(
+                'external' => $imagePath,
+                'name' => $filename,
+                'title' => !empty($image['title']) ? $image['title'] : null,
+                'alt' => !empty($image['alt']) ? $image['alt'] : null,
+                'extension' => !empty($image['extension']) ? $image['extension'] : null,
+                'type' => !empty($image['type']) ? $image['type'] : null,
+                'width' => !empty($image['width']) ? $image['width'] : null,
+                'height' => !empty($image['height']) ? $image['height'] : null,
+            );
         }
+        $resource->addAssets($assets);
 
         $profile = new \Bpi\ApiBundle\Domain\Entity\Profile();
 
@@ -542,14 +564,14 @@ class RestController extends FOSRestController
                 }
 
                 $node = $this->get('domain.push_service')
-                  ->pushRevision(new NodeId($id), $author, $resource, $params, $assets);
+                  ->pushRevision(new NodeId($id), $author, $resource, $params);
 
                 $facetRepository->prepareFacet($node);
 
                 return $this->get("bpi.presentation.transformer")->transform($node);
             }
             $node = $this->get('domain.push_service')
-              ->push($author, $resource, $request->get('category'), $request->get('audience'), $profile, $params, $assets);
+              ->push($author, $resource, $request->get('category'), $request->get('audience'), $profile, $params);
 
             $facets = $facetRepository->prepareFacet($node);
 
@@ -577,7 +599,7 @@ class RestController extends FOSRestController
      * @param array $data
      * @return \Symfony\Component\Validator\ConstraintViolationList
      */
-    protected function _isValidForPushNode(array $data)
+    protected function isValidForPushNode(array $data)
     {
         // @todo move somewhere all this validation stuff
         $node = new Constraints\Collection(array(
@@ -716,49 +738,6 @@ class RestController extends FOSRestController
     }
 
     /**
-     * Only for live documentation
-     *
-     * @Rest\Get("/node/{node_id}/asset")
-     * @Rest\View(template="BpiApiBundle:Rest:testinterface.html.twig", statusCode="200")
-     */
-    public function getNodeAssetAction($node_id)
-    {
-
-    }
-
-    /**
-     * Link file with node
-     * Filename will overwrite existing one if it has previously set
-     *
-     * @Rest\Put("/node/{node_id}/asset/{filename}")
-     * @Rest\View(statusCode="204")
-     */
-    public function putNodeAssetAction($node_id, $filename)
-    {
-        /*
-         * NOT USED
-        $node = $this->getRepository('BpiApiBundle:Aggregate\Node')->find($node_id);
-        if (is_null($node))
-            throw new HttpException(404, 'No such node ID exists');
-
-        $filesystem = $this->get('knp_gaufrette.filesystem_map')->get('assets');
-        $file = new \Gaufrette\File($filename, $filesystem);
-        $result = $file->setContent($this->getRequest()->getContent(), array('title' => 'test_title'));
-
-        if (false === $result)
-            throw new HttpException(500, 'Unable to store requested file');
-
-        $node->allocateFile($file);
-
-        $dm = $this->get('doctrine.odm.mongodb.document_manager');
-        $dm->persist($node);
-        $dm->flush();
-
-        return new Response('', 204);
-        */
-    }
-
-    /**
      * Output media asset
      *
      * @Rest\Get("/asset/{filename}.{extension}")
@@ -767,7 +746,6 @@ class RestController extends FOSRestController
     {
         $extension = strtolower($extension);
 
-        $file = $filename . '.' . $extension;
         $mime = 'application/octet-stream';
 
         switch ($extension) {
@@ -968,8 +946,9 @@ class RestController extends FOSRestController
         /**
          * @todo validate against schema (logical check)
          */
-        if (empty($request_body) || false === simplexml_load_string($request_body))
+        if (empty($request_body) || false === simplexml_load_string($request_body)) {
             throw new HttpException(400, 'Bad Request'); // syntax check fail
+        }
 
         $document = $this->get("serializer")->deserialize(
             $request_body,

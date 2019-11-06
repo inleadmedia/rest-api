@@ -54,13 +54,13 @@ class NodeController extends Controller
         $knpPaginator = $this->get('knp_paginator');
 
         $pagination = $knpPaginator->paginate(
-          $query,
-          $this->get('request')->query->get('page', 1),
-          50,
-          array(
-            'defaultSortFieldName' => 'resource.title',
-            'defaultSortDirection' => 'desc',
-          )
+            $query,
+            $this->get('request')->query->get('page', 1),
+            50,
+            array(
+                'defaultSortFieldName' => 'resource.title',
+                'defaultSortDirection' => 'desc',
+            )
         );
 
         return array(
@@ -87,7 +87,6 @@ class NodeController extends Controller
                     $this->generateUrl('bpi_admin_node')
                 );
             }
-
         }
 
         return array(
@@ -101,6 +100,7 @@ class NodeController extends Controller
      */
     public function editAction($id)
     {
+        /** @var \Bpi\ApiBundle\Domain\Aggregate\Node $node */
         $node = $this->getRepository()->find($id);
         $form = $this->createNodeForm($node);
         $request = $this->getRequest();
@@ -159,9 +159,9 @@ class NodeController extends Controller
         }
 
         $assets = array();
-        $nodeAssets = $node->getAssets();
-        if(!empty($nodeAssets)) {
-            $assets = $this->prepareAssets($nodeAssets->getCollection());
+        $nodeAssets = $node->getResource()->getAssets();
+        if (!empty($nodeAssets)) {
+            $assets = $this->prepareAssets($nodeAssets);
         }
 
         return array(
@@ -275,8 +275,7 @@ class NodeController extends Controller
                     'class' => 'BpiApiBundle:Entity\Audience',
                     'property' => 'audience'
                 )
-            )
-        ;
+            );
 
         if (!$new) {
             $formBuilder->add('deleted', 'checkbox', array('required' => false));
@@ -294,9 +293,13 @@ class NodeController extends Controller
     protected function prepareAssets($nodeAssets)
     {
         $imageExtensions = array('jpg', 'jpeg', 'png', 'gif');
-        $assets =array();
+        $assets = array();
         foreach ($nodeAssets as $asset) {
-            if (in_array($asset->getExtension(), $imageExtensions)){
+            $asset['url'] = $this->generateUrl('get_asset', array(
+                'filename' => $asset['file'],
+                'extension' => $asset['extension'],
+            ));
+            if (in_array($asset['extension'], $imageExtensions)) {
                 $assets['images'][] = $asset;
             } else {
                 $assets['documents'][] = $asset;
@@ -304,6 +307,5 @@ class NodeController extends Controller
         }
 
         return $assets;
-
     }
 }

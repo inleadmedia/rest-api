@@ -28,7 +28,6 @@ class AppKernel extends Kernel
             new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
             new Bpi\AdminBundle\BpiAdminBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
-            new AntiMattr\Bundle\MongoDBMigrationsBundle\MongoDBMigrationsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'test_skip_auth'))) {

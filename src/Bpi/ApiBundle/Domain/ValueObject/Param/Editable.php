@@ -14,26 +14,4 @@ class Editable implements IParam
     {
         return $this->editable;
     }
-
-    /**
-     * Set editable
-     *
-     * @param string $editable
-     * @return self
-     */
-    public function setEditable($editable)
-    {
-        $this->editable = $editable;
-        return $this;
-    }
-
-    /**
-     * Get editable
-     *
-     * @return string $editable
-     */
-    public function getEditable()
-    {
-        return $this->editable;
-    }
 }
