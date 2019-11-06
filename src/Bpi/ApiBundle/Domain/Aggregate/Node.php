@@ -30,6 +30,7 @@ class Node implements IPresentable
     protected $category;
     protected $audience;
     protected $tags;
+    protected $assets;
 
     protected $syndicated = 0;
 
@@ -348,11 +349,6 @@ class Node implements IPresentable
         return $this;
     }
 
-    public function setCtime($ctime)
-    {
-        $this->ctime = $ctime;
-    }
-
     /**
      * Set ctime
      *
@@ -572,11 +568,6 @@ class Node implements IPresentable
     {
         return $this->params;
     }
-    /**
-     * @var one $assets
-     */
-    protected $assets;
-
 
     /**
      * Set assets
