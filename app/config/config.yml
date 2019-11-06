@@ -113,13 +113,13 @@ doctrine_mongodb:
             mappings:
                 BpiApiBundle: { type: yml, prefix: Bpi\ApiBundle\Domain }
 
-mongo_db_migrations:
-    collection_name: "migration_versions"
-    database_name: "bpi"
-    dir_name: "%kernel.root_dir%/../src/Bpi/ApiBundle/Resources/config/Migrations/MongoDB"
-    script_dir_name: "%kernel.root_dir%/scripts"
-    name: "Bpi APIbundle MongoDB Migrations"
-    namespace: "Bpi\ApiBundle\Migrations\MongoDB"
+#mongo_db_migrations:
+#    collection_name: "migration_versions"
+#    database_name: "bpi"
+#    dir_name: "%kernel.root_dir%/../src/Bpi/ApiBundle/Resources/config/Migrations/MongoDB"
+#    script_dir_name: "%kernel.root_dir%/scripts"
+#    name: "Bpi APIbundle MongoDB Migrations"
+#    namespace: "Bpi\ApiBundle\Migrations\MongoDB"
 
 nelmio_api_doc: ~
 
