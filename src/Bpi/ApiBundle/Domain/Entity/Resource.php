@@ -276,4 +276,12 @@ class Resource implements IPresentable
     {
         return $this->data;
     }
+
+    /**
+     * @return \Bpi\ApiBundle\Domain\Entity\Resource\Body
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
 }

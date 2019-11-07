@@ -102,4 +102,20 @@ class Author implements \Bpi\ApiBundle\Transform\IPresentable
     public function loadAgency(\Bpi\ApiBundle\Domain\Repository\AgencyRepository $repository) {
         $this->agency = $repository->findOneBy(array('public_id' => $this->agency_id));
     }
+
+    /**
+     * @return string
+     */
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
 }

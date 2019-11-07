@@ -383,4 +383,12 @@ class Node implements IPresentable
     {
         $this->mtime = $mtime;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAssets()
+    {
+        return $this->assets;
+    }
 }
