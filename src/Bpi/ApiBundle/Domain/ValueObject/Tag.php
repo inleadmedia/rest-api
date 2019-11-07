@@ -52,26 +52,4 @@ class Tag implements IValueObject, IPresentable
     {
         $document->currentEntity()->addProperty($document->createProperty($this->name, 'yearwheel', $this->name));
     }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 }

@@ -512,13 +512,17 @@ class RestController extends FOSRestController
         }
 
         // Download files and add them to resource
-        $assets = new \Bpi\ApiBundle\Domain\Aggregate\Assets();
-        $data = $request->get('assets', array());
-        foreach ($data as $asset) {
-            $bpi_file = new \Bpi\ApiBundle\Domain\Entity\File($asset);
-            $bpi_file->createFile();
-            $assets->addElem($bpi_file);
+        $images = $request->get('images', array());
+        foreach ($images as $image) {
+            $image = $image['path'];
+            $ext = pathinfo(parse_url($image, PHP_URL_PATH), PATHINFO_EXTENSION);
+            $filename = md5($image . microtime()); // . '.' . $ext;
+            $file = $filesystem->createFile($filename);
+            // @todo Download files in a proper way.
+            $file->setContent(file_get_contents($image));
+            $assets[] = array('file' => $file->getKey(), 'type' => 'attachment', 'extension' => $ext);
         }
+        $resource->addAssets($assets);
 
         $profile = new \Bpi\ApiBundle\Domain\Entity\Profile();
 
@@ -542,14 +546,14 @@ class RestController extends FOSRestController
                 }
 
                 $node = $this->get('domain.push_service')
-                  ->pushRevision(new NodeId($id), $author, $resource, $params, $assets);
+                  ->pushRevision(new NodeId($id), $author, $resource, $params);
 
                 $facetRepository->prepareFacet($node);
 
                 return $this->get("bpi.presentation.transformer")->transform($node);
             }
             $node = $this->get('domain.push_service')
-              ->push($author, $resource, $request->get('category'), $request->get('audience'), $profile, $params, $assets);
+              ->push($author, $resource, $request->get('category'), $request->get('audience'), $profile, $params);
 
             $facets = $facetRepository->prepareFacet($node);
 

@@ -48,9 +48,9 @@ class Node implements IPresentable
         Category $category,
         Audience $audience,
         ArrayCollection $tags,
-        Params $params,
-        Assets $assets
-    ) {
+        Params $params
+    )
+    {
         $this->author = $author;
         $this->resource = $resource;
         $this->profile = $profile;
@@ -58,7 +58,6 @@ class Node implements IPresentable
         $this->category = $category;
         $this->audience = $audience;
         $this->tags = $tags;
-        $this->assets = $assets;
 
         $this->markTimes();
     }
@@ -109,7 +108,7 @@ class Node implements IPresentable
      * @param Resource $resource
      * @return Node
      */
-    public function createRevision(Author $author, Resource $resource, Params $params, Assets $assets)
+    public function createRevision(Author $author, Resource $resource, Params $params)
     {
         $builder = new \Bpi\ApiBundle\Domain\Factory\NodeBuilder;
         $node = $builder
@@ -117,7 +116,6 @@ class Node implements IPresentable
             ->profile($this->profile)
             ->resource($resource)
             ->params($params)
-            ->assets($assets)
             ->category($this->category)
             ->audience($this->audience)
             ->build()
@@ -186,7 +184,6 @@ class Node implements IPresentable
 
         $this->profile->transform($document);
         $this->resource->transform($document);
-        $this->assets->transform($document);
     }
 
     /**
@@ -372,21 +369,7 @@ class Node implements IPresentable
     }
 
     /**
-     * Set mtime
-     *
-     * @param date $mtime
-     * @return self
-     */
-    public function setMtime($mtime)
-    {
-        $this->mtime = $mtime;
-        return $this;
-    }
-
-    /**
-     * Get mtime
-     *
-     * @return date $mtime
+     * @return mixed
      */
     public function getMtime()
     {
@@ -394,200 +377,10 @@ class Node implements IPresentable
     }
 
     /**
-     * Set path
-     *
-     * @param string $path
-     * @return self
+     * @param mixed $mtime
      */
-    public function setPath($path)
+    public function setMtime($mtime)
     {
-        $this->path = $path;
-        return $this;
-    }
-
-    /**
-     * Get path
-     *
-     * @return string $path
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set level
-     *
-     * @param int $level
-     * @return self
-     */
-    public function setLevel($level)
-    {
-        $this->level = $level;
-        return $this;
-    }
-
-    /**
-     * Get level
-     *
-     * @return int $level
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * Set parent
-     *
-     * @param Bpi\ApiBundle\Domain\Aggregate\Node $parent
-     * @return self
-     */
-    public function setParent(\Bpi\ApiBundle\Domain\Aggregate\Node $parent)
-    {
-        $this->parent = $parent;
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return Bpi\ApiBundle\Domain\Aggregate\Node $parent
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Set lockTime
-     *
-     * @param date $lockTime
-     * @return self
-     */
-    public function setLockTime($lockTime)
-    {
-        $this->lock_time = $lockTime;
-        return $this;
-    }
-
-    /**
-     * Get lockTime
-     *
-     * @return date $lockTime
-     */
-    public function getLockTime()
-    {
-        return $this->lock_time;
-    }
-
-    /**
-     * Get deleted
-     *
-     * @return boolean $deleted
-     */
-    public function getDeleted()
-    {
-        return $this->deleted;
-    }
-
-    /**
-     * Set author
-     *
-     * @param Bpi\ApiBundle\Domain\Entity\Author $author
-     * @return self
-     */
-    public function setAuthor(\Bpi\ApiBundle\Domain\Entity\Author $author)
-    {
-        $this->author = $author;
-        return $this;
-    }
-
-    /**
-     * Set profile
-     *
-     * @param Bpi\ApiBundle\Domain\Entity\Profile $profile
-     * @return self
-     */
-    public function setProfile(\Bpi\ApiBundle\Domain\Entity\Profile $profile)
-    {
-        $this->profile = $profile;
-        return $this;
-    }
-
-    /**
-     * Get profile
-     *
-     * @return Bpi\ApiBundle\Domain\Entity\Profile $profile
-     */
-    public function getProfile()
-    {
-        return $this->profile;
-    }
-
-    /**
-     * Set resource
-     *
-     * @param Bpi\ApiBundle\Domain\Entity\Resource $resource
-     * @return self
-     */
-    public function setResource(\Bpi\ApiBundle\Domain\Entity\Resource $resource)
-    {
-        $this->resource = $resource;
-        return $this;
-    }
-
-    /**
-     * Get resource
-     *
-     * @return Bpi\ApiBundle\Domain\Entity\Resource $resource
-     */
-    public function getResource()
-    {
-        return $this->resource;
-    }
-
-    /**
-     * Set params
-     *
-     * @param Bpi\ApiBundle\Domain\Aggregate\Params $params
-     * @return self
-     */
-    public function setParams(\Bpi\ApiBundle\Domain\Aggregate\Params $params)
-    {
-        $this->params = $params;
-        return $this;
-    }
-
-    /**
-     * Get params
-     *
-     * @return Bpi\ApiBundle\Domain\Aggregate\Params $params
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
-     * Set assets
-     *
-     * @param \Bpi\ApiBundle\Domain\Aggregate\Assets $assets
-     * @return self
-     */
-    public function setAssets(\Bpi\ApiBundle\Domain\Aggregate\Assets $assets)
-    {
-        $this->assets = $assets;
-        return $this;
-    }
-
-    /**
-     * Get assets
-     *
-     * @return one $assets
-     */
-    public function getAssets()
-    {
-        return $this->assets;
+        $this->mtime = $mtime;
     }
 }

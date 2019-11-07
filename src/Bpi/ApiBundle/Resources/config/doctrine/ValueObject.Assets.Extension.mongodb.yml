@@ -1,5 +1,0 @@
-Bpi\ApiBundle\Domain\ValueObject\Assets\Extension:
-  type: embeddedDocument
-  fields:
-    extension:
-      type: string

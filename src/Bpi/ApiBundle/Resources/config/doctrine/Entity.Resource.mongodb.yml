@@ -18,6 +18,8 @@ Bpi\ApiBundle\Domain\Entity\Resource:
       type: one
       strategy: pushAll
       targetDocument: Bpi\ApiBundle\Domain\ValueObject\Copyleft
+    assets:
+      type: hash
     url:
       type: string
     data:

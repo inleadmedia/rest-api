@@ -78,48 +78,4 @@ class Material implements IValueObject
 
         return $modificated;
     }
-
-    /**
-     * Set libraryCode
-     *
-     * @param string $libraryCode
-     * @return self
-     */
-    public function setLibraryCode($libraryCode)
-    {
-        $this->library_code = $libraryCode;
-        return $this;
-    }
-
-    /**
-     * Get libraryCode
-     *
-     * @return string $libraryCode
-     */
-    public function getLibraryCode()
-    {
-        return $this->library_code;
-    }
-
-    /**
-     * Set faustCode
-     *
-     * @param string $faustCode
-     * @return self
-     */
-    public function setFaustCode($faustCode)
-    {
-        $this->faust_code = $faustCode;
-        return $this;
-    }
-
-    /**
-     * Get faustCode
-     *
-     * @return string $faustCode
-     */
-    public function getFaustCode()
-    {
-        return $this->faust_code;
-    }
 }
