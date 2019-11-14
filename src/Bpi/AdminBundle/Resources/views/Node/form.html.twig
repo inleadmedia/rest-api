@@ -38,8 +38,8 @@
             <h3>Node assets</h3>
             {% if assets.images is defined %}
                 {% for image in assets.images %}
-                    <a href="{{ image.path }}">
-                        <img src="{{ image.path }}" alt="{{ image.title }}">
+                    <a href="{{ image.url }}">
+                        <img src="{{ image.url }}">
                     </a>
                 {% endfor %}
             {% endif %}

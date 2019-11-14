@@ -24,7 +24,7 @@ services:
       class: Doctrine\MongoDB\Connection
       factory_service: doctrine_mongodb.odm.default_connection
       factory_method: selectDatabase
-      arguments: ["bpi"]
+      arguments: ["%mongodb_db%"]
     bpi.gridfs.db:
         class: Doctrine\MongoDB\Database
         factory_service: bpi.gridfs.conn

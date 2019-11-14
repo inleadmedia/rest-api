@@ -68,8 +68,7 @@ class Resource implements IPresentable
         array $materials = array(),
         $url,
         $data
-    )
-    {
+    ) {
         $this->title = $title;
         $this->body = new Resource\Body($body, $filesystem, $router);
         $this->body->rebuildInlineAssets();
@@ -94,9 +93,10 @@ class Resource implements IPresentable
      * @param  AgencyID $syndicator
      * @return void
      */
-    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator) {
+    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator)
+    {
         $syndication_materials = array();
-        foreach($this->materials as $material) {
+        foreach ($this->materials as $material) {
             if ($material->isLibraryEquals($owner)) {
                 $syndication_materials[] = $material->reassignToAgency($syndicator);
             } else {
@@ -115,12 +115,14 @@ class Resource implements IPresentable
      */
     public function isSimilar(Resource $resource)
     {
-        if ($this->body == $resource->body)
+        if ($this->body == $resource->body) {
             return true;
+        }
 
         similar_text(strip_tags($this->body), strip_tags($resource->body), $similarity);
-        if ($similarity > 50)
+        if ($similarity > 50) {
             return true;
+        }
 
         return false;
     }
@@ -140,8 +142,15 @@ class Resource implements IPresentable
         // Add assets to presentation.
         $i = 1;
         foreach ($this->assets as $asset) {
-            $assetUrl = $document->generateRoute("get_asset", array('filename'=> $asset['file'], 'extension'=> $asset['extension']), true);
-            $entity->addProperty($document->createProperty('asset' . $i, 'asset', $assetUrl));
+            $assetUrl = $document->generateRoute(
+                'get_asset',
+                array(
+                    'filename'=> $asset['file'],
+                    'extension'=> $asset['extension']
+                ),
+                true
+            );
+            $entity->addProperty($document->createProperty($asset['type'], 'asset', $assetUrl));
             $i++;
         }
 
@@ -155,8 +164,7 @@ class Resource implements IPresentable
         $entity->addProperty($document->createProperty('url', 'string', $this->url));
         $entity->addProperty($document->createProperty('data', 'string', $this->data));
 
-        foreach ($this->materials as $material)
-        {
+        foreach ($this->materials as $material) {
             $entity->addProperty($document->createProperty('material', 'string', (string) $material));
         }
     }
@@ -283,5 +291,13 @@ class Resource implements IPresentable
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets()
+    {
+        return $this->assets;
     }
 }

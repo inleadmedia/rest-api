@@ -6,7 +6,6 @@ use Bpi\ApiBundle\Domain\Entity\Resource;
 use Bpi\ApiBundle\Domain\Entity\Author;
 use Bpi\ApiBundle\Domain\Entity\Category;
 use Bpi\ApiBundle\Domain\Entity\Audience;
-use Bpi\ApiBundle\Domain\Aggregate\Params;
 use Bpi\ApiBundle\Domain\ValueObject\Param\Editable;
 use Bpi\ApiBundle\Domain\ValueObject\AgencyId;
 use Bpi\ApiBundle\Transform\IPresentable;
@@ -14,7 +13,6 @@ use Bpi\RestMediaTypeBundle\Document;
 use Bpi\ApiBundle\Transform\Comparator;
 use Bpi\RestMediaTypeBundle\XmlResponse;
 use Doctrine\Common\Collections\ArrayCollection;
-use Gaufrette\File;
 
 class Node implements IPresentable
 {
@@ -30,7 +28,6 @@ class Node implements IPresentable
     protected $category;
     protected $audience;
     protected $tags;
-    protected $assets;
 
     protected $syndicated = 0;
 
@@ -49,8 +46,7 @@ class Node implements IPresentable
         Audience $audience,
         ArrayCollection $tags,
         Params $params
-    )
-    {
+    ) {
         $this->author = $author;
         $this->resource = $resource;
         $this->profile = $profile;
@@ -148,7 +144,7 @@ class Node implements IPresentable
             'boolean',
             (int)$this->params
                 ->filter(function ($e) {
-                    if ($e instanceof Editable) return true;
+                    return $e instanceof Editable;
                 })
                 ->first()
                 ->isPositive()
@@ -308,19 +304,23 @@ class Node implements IPresentable
         $this->resource->setBody($body);
     }
 
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->resource->getUrl();
     }
 
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         return $this->resource->url($url);
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->resource->getData();
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         return $this->resource->data($data);
     }
 
@@ -385,10 +385,10 @@ class Node implements IPresentable
     }
 
     /**
-     * @return mixed
+     * @return \Bpi\ApiBundle\Domain\Entity\Resource
      */
-    public function getAssets()
+    public function getResource()
     {
-        return $this->assets;
+        return $this->resource;
     }
 }
