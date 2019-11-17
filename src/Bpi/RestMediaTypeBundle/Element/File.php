@@ -70,9 +70,9 @@ class File
     public function __construct($data)
     {
         $this->name = !empty($data['name']) ? $data['name'] : null;
-        $this->path =  !empty($data['path']) ? $data['path'] : null;
-        $this->title =  !empty($data['title']) ? $data['title'] : null;
-        $this->alt =  !empty($data['alt']) ? $data['alt'] : null;
+        $this->path = !empty($data['path']) ? $data['path'] : null;
+        $this->title = !empty($data['title']) ? $data['title'] : null;
+        $this->alt = !empty($data['alt']) ? $data['alt'] : null;
         $this->extension = !empty($data['extension']) ? $data['extension'] : null;
         $this->external = !empty($data['external']) ? $data['external'] : null;
         $this->type = !empty($data['type']) ? $data['type'] : null;
