@@ -139,21 +139,6 @@ class Resource implements IPresentable
             $document->appendEntity($entity);
         }
 
-        // Add assets to presentation.
-        $i = 1;
-        foreach ($this->assets as $asset) {
-            $assetUrl = $document->generateRoute(
-                'get_asset',
-                array(
-                    'filename'=> $asset['file'],
-                    'extension'=> $asset['extension']
-                ),
-                true
-            );
-            $entity->addProperty($document->createProperty($asset['type'], 'asset', $assetUrl));
-            $i++;
-        }
-
         $copyleft = '<p>' . $this->copyleft . '</p>';
 
         $entity->addProperty($document->createProperty('title', 'string', $this->title));

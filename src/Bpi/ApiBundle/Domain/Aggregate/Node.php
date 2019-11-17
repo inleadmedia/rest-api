@@ -180,6 +180,28 @@ class Node implements IPresentable
 
         $this->profile->transform($document);
         $this->resource->transform($document);
+
+        try {
+            $assetsEntity = $document->currentEntity();
+        } catch (\RuntimeException $e) {
+            $assetsEntity = $document->createEntity('entity', 'assets');
+            $document->appendEntity($assetsEntity);
+        }
+
+        foreach ($this->resource->getAssets() as $asset) {
+            $assetName = !empty($asset['name']) ? $asset['name'] : $asset['file'];
+            $asset['name'] = $assetName;
+            $asset['path'] = $document->generateRoute(
+                'get_asset',
+                array(
+                    'filename' => $assetName,
+                    'extension' => $asset['extension']
+                ),
+                true
+            );
+
+            $assetsEntity->addAsset($asset);
+        }
     }
 
     /**

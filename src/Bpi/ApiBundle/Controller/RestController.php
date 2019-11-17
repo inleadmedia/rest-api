@@ -525,15 +525,19 @@ class RestController extends FOSRestController
         $images = $request->get('assets', array());
         foreach ($images as $image) {
             $imagePath = $image['path'];
-            $ext = pathinfo(parse_url($imagePath, PHP_URL_PATH), PATHINFO_EXTENSION);
-            $filename = md5($imagePath . microtime());
+            $filename = md5($image['name'] . time());
             $file = $filesystem->createFile($filename);
             // @todo Download files in a proper way.
             $file->setContent(file_get_contents($imagePath));
             $assets[] = array(
-                'file' => $file->getKey(),
-                'type' => $image['type'],
-                'extension' => $ext
+                'external' => $imagePath,
+                'name' => $filename,
+                'title' => !empty($image['title']) ? $image['title'] : null,
+                'alt' => !empty($image['alt']) ? $image['alt'] : null,
+                'extension' => !empty($image['extension']) ? $image['extension'] : null,
+                'type' => !empty($image['type']) ? $image['type'] : null,
+                'width' => !empty($image['width']) ? $image['width'] : null,
+                'height' => !empty($image['height']) ? $image['height'] : null,
             );
         }
         $resource->addAssets($assets);
@@ -766,7 +770,7 @@ class RestController extends FOSRestController
         } catch (\Gaufrette\Exception\FileNotFound $e) {
             throw $this->createNotFoundException();
         } catch (\Exception $e) {
-            return new Response('Bad file', 403);
+            return new Response('Bad file', 410);
         }
     }
 
