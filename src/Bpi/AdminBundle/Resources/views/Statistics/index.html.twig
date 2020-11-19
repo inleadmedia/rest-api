@@ -11,31 +11,83 @@
 
 {% block content %}
     {{ form_start(form) }}
-    <div class="row">
-        <div class="span3">
-            {{ form_row(form.dateFrom) }}
-        </div>
-        <div class="span3">
-            {{ form_row(form.dateTo) }}
+    <div class="navbar">
+        <div class="navbar-inner navbar-form">
+            <div class="container">
+                <div class="row">
+                    <div class="span7 form-inline">
+                        <div class="input-prepend">
+                            <span class="add-on">{{ form_label(form.dateFrom) }}</span>
+                            {{ form_widget(form.dateFrom) }}
+                        </div>
+                        <div class="input-prepend">
+                            <span class="add-on">{{ form_label(form.dateTo) }}</span>
+                            {{ form_widget(form.dateTo) }}
+                        </div>
+                    </div>
+                    <div class="span2">
+                        {{ form_widget(form.show, {'attr' : {'class':'btn btn-primary'}}) }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="span6">
-            {{ form_row(form.agencies, {'attr' : {'style':'height: 200px; width: 100%;'}}) }}
-                {{ form_row(form.excludeDeleted) }}
-                {{ form_row(form.excludeInternal) }}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="well">
+                    {% if form.vars.submitted %}
+                        {% if statistics %}
+                            {% for key, stat in statistics %}
+                                <span class="label label-info">{{key}}</span>: <span class="label label-success">{{stat}}</span><br />
+                            {% endfor %}
+                        {% elseif not selected_agencies %}
+                            <span class="label label-important">Error</span><span>No agency selected.</span>
+                        {% else %}
+                            <span class="label label-warning">Warning</span><span>No statistics for the selected combination of agencies, period and/or filters.</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="label label-info">Note</span><span>Select a period and at least one agency.</span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
-    {% for key, stat in statistics %}
-    <span>{{key}}</span>: {{stat}}<br />
-    {% else %}
-    No data.
-    {% endfor %}
-
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Agency</th>
+                            <th>Name</th>
+                            <th>Internal</th>
+                            <th>Deleted</th>
+                            <th><input type="checkbox" name="select_all" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for agency in agencies %}
+                            <tr class="{% if agency.deleted %}error{% elseif not agency.internal%}warning{% endif %}">
+                                <td>{{ loop.index }}.</td>
+                                <td>{{ agency.agencyId.id }}</td>
+                                <td>{{ agency.name }}</td>
+                                <td>{% if agency.internal %} Yes {% else %} No {% endif %}</td>
+                                <td>{% if agency.deleted %} Yes {% else %} No {% endif %}</td>
+                                <td><input type="checkbox" name="agencies[]" value="{{ agency.agencyId }}" {% if agency.agencyId.id in selected_agencies %}checked="checked"{% endif %}/></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
     <script src="{{ asset('bundles/bpiadmin/js/jquery-1.9.1.min.js') }}"></script>
     <script src="{{ asset('bundles/bpiadmin/js/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('bundles/bpiadmin/js/statistics.js') }}"></script>
     <script>
     $('#form_dateFrom, #form_dateTo').datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function () {
         $(this).datepicker('hide');
