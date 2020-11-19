@@ -40,29 +40,14 @@ class StatisticsController extends Controller
 
         $formBuilder = $this->createFormBuilder()
             ->add('dateFrom', DateType::class, [
+                'label' => 'From',
                 'widget' => 'single_text',
                 'html5' => false,
             ])
             ->add('dateTo', DateType::class, [
+                'label' => 'To',
                 'widget' => 'single_text',
                 'html5' => false,
-            ])
-            ->add('agencies', ChoiceType::class, [
-                'required' => true,
-                'choices' => $agenciesChoice,
-                'multiple' => true,
-            ])
-            ->add('excludeDeleted', CheckboxType::class, [
-                'required' => false,
-                'label_attr' => [
-                    'style' => 'display: inline; margin-right: 5px;'
-                ]
-            ])
-            ->add('excludeInternal', CheckboxType::class, [
-                'required' => false,
-                'label_attr' => [
-                    'style' => 'display: inline; margin-right: 5px;'
-                ]
             ])
             ->add('show', SubmitType::class, [
                 'attr' => ['class' => 'btn'],
@@ -84,36 +69,33 @@ class StatisticsController extends Controller
             $agencyRepository = $dm->getRepository(Agency::class);
             $qb = $agencyRepository->createQueryBuilder();
 
-            $qb->field('public_id')->in($data['agencies']);
-            if ($data['excludeDeleted']) {
-                $qb->addAnd($qb->expr()->field('deleted')->equals(false));
+            $qb->field('public_id')->in($request->get('agencies', []));
+
+            $selectedAgencies = $qb->getQuery()->execute();
+
+            if ($selectedAgencies->count()) {
+                $agencyIds = [];
+                foreach ($selectedAgencies as $selectedAgency) {
+                    $agencyIds[] = $selectedAgency->getPublicId();
+                }
+
+                $data['dateTo']->modify('+23 hours 59 minutes');
+
+                /** @var \Bpi\ApiBundle\Domain\Repository\HistoryRepository $historyRepository */
+                $historyRepository = $dm->getRepository(History::class);
+                $statistics = $historyRepository
+                    ->getStatisticsByDateRangeForAgency(
+                        $data['dateFrom'],
+                        $data['dateTo'],
+                        $agencyIds
+                    )->getStats();
             }
-
-            if ($data['excludeInternal']) {
-                $qb->addAnd($qb->expr()->field('internal')->equals(false));
-            }
-
-            $agencies = $qb->getQuery()->execute();
-
-            $agencyIds = [];
-            foreach ($agencies as $agency) {
-                $agencyIds[] = $agency->getPublicId();
-            }
-
-            $data['dateTo']->modify('+23 hours 59 minutes');
-
-            /** @var \Bpi\ApiBundle\Domain\Repository\HistoryRepository $historyRepository */
-            $historyRepository = $dm->getRepository(History::class);
-            $statistics = $historyRepository
-                ->getStatisticsByDateRangeForAgency(
-                    $data['dateFrom'],
-                    $data['dateTo'],
-                    $agencyIds
-                )->getStats();
         }
 
         return [
             'form' => $form->createView(),
+            'agencies' => $agencies,
+            'selected_agencies' => $request->get('agencies', []),
             'statistics' => $statistics,
         ];
     }
