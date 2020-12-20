@@ -66,16 +66,16 @@ class HistoryRepository extends DocumentRepository
                 ->equals($actionFilter);
 
         if ('node' == $aggregateField && !empty($agencyFilter)) {
-            $results = $this->dm->createQueryBuilder(Node::class)
+            $nodeFilterResults = $this->dm->createQueryBuilder(Node::class)
                 ->field('author.agency_id')
                 ->in($agencyFilter)
                 ->getQuery()
                 ->execute();
 
             $filterIds = [];
-            /** @var \Bpi\ApiBundle\Domain\Aggregate\Node $result */
-            foreach ($results as $result) {
-                $filterIds[] = new \MongoId($result->getId());
+            /** @var \Bpi\ApiBundle\Domain\Aggregate\Node $node */
+            foreach ($nodeFilterResults as $node) {
+                $filterIds[] = new \MongoId($node->getId());
             }
 
             $qb
@@ -83,12 +83,12 @@ class HistoryRepository extends DocumentRepository
                 ->in($filterIds);
         }
 
-        $_results = $qb->getQuery()->execute();
+        $result = $qb->getQuery()->execute();
 
         $activity = [];
-        foreach ($_results as $_result) {
+        foreach ($result as $result) {
             $entityMethod = 'get' . ucfirst(strtolower($aggregateField));
-            $aggregateFieldResult = $_result->{$entityMethod}();
+            $aggregateFieldResult = $result->{$entityMethod}();
             $aggregateId = is_string($aggregateFieldResult) ? $aggregateFieldResult : $aggregateFieldResult->getId();
             $activity[$aggregateId]['id'] = $aggregateId;
             $activity[$aggregateId]['title'] = 'node' == $aggregateField ? $this->getNodeTitle($aggregateId) : $this->getAgencyTitle($aggregateId);

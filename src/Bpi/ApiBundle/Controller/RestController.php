@@ -440,7 +440,6 @@ class RestController extends FOSRestController
         $repository = $this->getRepository('BpiApiBundle:Entity\History');
         /** @var \Bpi\ApiBundle\Transform\Presentation $transform */
         $transform = $this->get('bpi.presentation.transformer');
-//        $transform->setDoc($this->get('bpi.presentation.document'));
 
         $statExtended = $repository->getActivity(
             $dateFrom,
