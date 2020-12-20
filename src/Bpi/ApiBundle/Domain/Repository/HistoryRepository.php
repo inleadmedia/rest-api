@@ -83,10 +83,10 @@ class HistoryRepository extends DocumentRepository
                 ->in($filterIds);
         }
 
-        $result = $qb->getQuery()->execute();
+        $results = $qb->getQuery()->execute();
 
         $activity = [];
-        foreach ($result as $result) {
+        foreach ($results as $result) {
             $entityMethod = 'get' . ucfirst(strtolower($aggregateField));
             $aggregateFieldResult = $result->{$entityMethod}();
             $aggregateId = is_string($aggregateFieldResult) ? $aggregateFieldResult : $aggregateFieldResult->getId();
