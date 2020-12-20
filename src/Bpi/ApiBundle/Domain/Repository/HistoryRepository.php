@@ -58,23 +58,19 @@ class HistoryRepository extends DocumentRepository
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getActivity(\DateTime $dateFrom, \DateTime $dateTo, $actionFilter, $aggregateField, $agencyFilter = [], $limit = 10) {
-        $dm = $this->dm;
-
-        $ab = $dm->createAggregationBuilder(History::class);
-        $ab
-            ->match()
-                ->field('datetime')
-                    ->gte($dateFrom)
-                    ->lte($dateTo)
-                ->field('action')
-                    ->equals($actionFilter);
+        $qb = $this->createQueryBuilder()
+            ->field('datetime')
+                ->gte($dateFrom)
+                ->lte($dateTo)
+            ->field('action')
+                ->equals($actionFilter);
 
         if ('node' == $aggregateField && !empty($agencyFilter)) {
-            $qb = $dm
-                ->createQueryBuilder(Node::class)
+            $results = $this->dm->createQueryBuilder(Node::class)
                 ->field('author.agency_id')
-                ->in($agencyFilter);
-            $results = $qb->getQuery()->execute();
+                ->in($agencyFilter)
+                ->getQuery()
+                ->execute();
 
             $filterIds = [];
             /** @var \Bpi\ApiBundle\Domain\Aggregate\Node $result */
@@ -82,32 +78,31 @@ class HistoryRepository extends DocumentRepository
                 $filterIds[] = new \MongoId($result->getId());
             }
 
-            $ab
-                ->match()
+            $qb
                 ->field('node.$id')
                 ->in($filterIds);
         }
 
-        $ab
-            ->group()
-                ->field('_id')
-                    ->expression('$'.$aggregateField)
-                ->field('total')
-                    ->sum(1)
-            ->sort(['total' => -1])
-            ->limit($limit);
-
-        $results = $ab->execute();
+        $_results = $qb->getQuery()->execute();
 
         $activity = [];
-        foreach ($results as $result) {
-            $id = is_string($result['_id']) ? $result['_id'] : (string) $result['_id']['$id'];
-            $activity[] = [
-                'id' => $id,
-                'title' => 'node' == $aggregateField ? $this->getNodeTitle($id) : $this->getAgencyTitle($id),
-                'total' => $result['total'],
-            ];
+        foreach ($_results as $_result) {
+            $entityMethod = 'get' . ucfirst(strtolower($aggregateField));
+            $aggregateFieldResult = $_result->{$entityMethod}();
+            $aggregateId = is_string($aggregateFieldResult) ? $aggregateFieldResult : $aggregateFieldResult->getId();
+            $activity[$aggregateId]['id'] = $aggregateId;
+            $activity[$aggregateId]['title'] = 'node' == $aggregateField ? $this->getNodeTitle($aggregateId) : $this->getAgencyTitle($aggregateId);
+            if (!isset($activity[$aggregateId]['total'])) {
+                $activity[$aggregateId]['total'] = 0;
+            }
+            $activity[$aggregateId]['total']++;
         }
+
+        usort($activity, function ($a, $b) {
+            return $a['total'] < $b['total'];
+        });
+
+        $activity = array_slice($activity, 0, $limit);
 
         return new StatisticsExtended(
             $dateFrom,
@@ -155,7 +150,9 @@ class HistoryRepository extends DocumentRepository
 
         $entity = $dm
             ->getRepository(Agency::class)
-            ->findByPublicId($id);
+            ->findOneBy([
+                'public_id' => $id,
+            ]);
 
         if ($entity instanceof TitleWrapperInterface) {
             return $entity->getTitle();

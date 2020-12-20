@@ -433,6 +433,7 @@ class RestController extends FOSRestController
         $numEntries = $request->get('amount', 10);
         $action = $request->get('action', 'syndicate');
         $aggregate = $request->get('aggregateField', 'agency');
+        $aggregate = in_array($aggregate, ['agency', 'node']) ? $aggregate : 'agency';
         $ownerAgency = $request->get('contentOwnerAgency', '');
 
         /** @var \Bpi\ApiBundle\Domain\Repository\HistoryRepository $repository */

@@ -3,6 +3,7 @@
 namespace Bpi\ApiBundle\Domain\Entity;
 
 use Bpi\ApiBundle\Transform\IPresentable;
+use Bpi\RestMediaTypeBundle\Document;
 use Bpi\RestMediaTypeBundle\XmlResponse;
 
 /**
@@ -43,7 +44,7 @@ class StatisticsExtended implements IPresentable {
      *
      * @param \Bpi\RestMediaTypeBundle\Document $document
      */
-    public function transform(XmlResponse $document)
+    public function transform(Document $document)
     {
         $entity = $document->createEntity('statistic', 'meta');
         $entity->addProperty(
