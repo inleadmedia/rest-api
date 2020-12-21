@@ -10,20 +10,18 @@ use Bpi\ApiBundle\Domain\Entity\Statistics;
  */
 class HistoryRepository extends DocumentRepository
 {
-  public function getStatisticsByDateRangeForAgency($dateFrom, $dateTo, $agencyId)
+  public function getStatisticsByDateRangeForAgency(\DateTime $dateFrom, \DateTime $dateTo, $agencyId = [])
   {
-    $dateFrom = new \DateTime($dateFrom . ' 00:00:00');
-    $dateTo = new \DateTime($dateTo . ' 23:59:59');
-
     $qb = $this->createQueryBuilder()
         ->field('datetime')->gte($dateFrom)
         ->field('datetime')->lte($dateTo);
 
     if (!empty($agencyId)) {
-        $qb->field('agency')->equals($agencyId);
+        $qb->field('agency')->in($agencyId);
     }
 
-    $qb->map('function() { emit(this.action, 1); }')
+    $qb
+        ->map('function() { emit(this.action, 1); }')
         ->reduce('function(k, vals) {
             var sum = 0;
             for (var i in vals) {
@@ -31,6 +29,7 @@ class HistoryRepository extends DocumentRepository
             }
             return sum;
         }');
+
     $result = $qb->getQuery()->execute();
 
     $res = array();
