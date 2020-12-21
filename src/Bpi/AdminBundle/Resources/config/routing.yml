@@ -78,6 +78,14 @@ bpi_admin_category_edit:
     pattern: /category/edit/{id}
     defaults: { _controller: BpiAdminBundle:Category:edit }
 
+bpi_admin_category_enable:
+    pattern: /category/enable/{id}
+    defaults: { _controller: BpiAdminBundle:Category:enable }
+
+bpi_admin_category_disable:
+    pattern: /category/disable/{id}
+    defaults: { _controller: BpiAdminBundle:Category:disable }
+
 bpi_admin_audience:
     pattern:  /audience
     defaults: { _controller: BpiAdminBundle:Audience:index }
@@ -89,3 +97,11 @@ bpi_admin_audience_new:
 bpi_admin_audience_edit:
     pattern: /audience/edit/{id}
     defaults: { _controller: BpiAdminBundle:Audience:edit }
+
+bpi_admin_audience_enable:
+    pattern: /audience/enable/{id}
+    defaults: { _controller: BpiAdminBundle:Audience:enable }
+
+bpi_admin_audience_disable:
+    pattern: /audience/disable/{id}
+    defaults: { _controller: BpiAdminBundle:Audience:disable }

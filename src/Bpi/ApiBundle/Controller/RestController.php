@@ -784,8 +784,14 @@ class RestController extends FOSRestController
     {
         $document = $this->get('bpi.presentation.document');
 
-        $audiences = $this->getRepository('BpiApiBundle:Entity\Audience')->findAll();
-        $categories = $this->getRepository('BpiApiBundle:Entity\Category')->findAll();
+        /** @var Audience[] $audiences */
+        $audiences = $this->getRepository('BpiApiBundle:Entity\Audience')->findBy([
+            'disabled' => false,
+        ]);
+        /** @var Category[] $categories */
+        $categories = $this->getRepository('BpiApiBundle:Entity\Category')->findBy([
+            'disabled' => false,
+        ]);
 
         foreach ($audiences as $audience) {
             $audience->transform($document);

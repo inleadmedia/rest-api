@@ -93,6 +93,32 @@ class AudienceController extends Controller
         );
     }
 
+    public function disableAction($id) {
+        $audience = $this->getRepository()->find($id);
+        $audience->setDisabled(true);
+
+        /** @var \Doctrine\Common\Persistence\ObjectManager $dm */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->flush();
+
+        return $this->redirect(
+            $this->generateUrl('bpi_admin_audience')
+        );
+    }
+
+    public function enableAction($id) {
+        $audience = $this->getRepository()->find($id);
+        $audience->setDisabled(false);
+
+        /** @var \Doctrine\Common\Persistence\ObjectManager $dm */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->flush();
+
+        return $this->redirect(
+            $this->generateUrl('bpi_admin_audience')
+        );
+    }
+
     private function createAudienceForm($audience)
     {
         $formBuilder = $this->createFormBuilder($audience)

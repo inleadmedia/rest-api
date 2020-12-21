@@ -7,6 +7,7 @@
     <thead>
         <tr>
             <th{% if pagination.isSorted('category') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Name', 'category', {'defaultDirection' : 'asc'}) }}</th>
+            <th>Disabled</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -14,8 +15,14 @@
     {% for item in pagination %}
         <tr>
             <td>{{ item.category }}</td>
+            <td>{{ item.disabled ? 'Yes' : 'No' }}</td>
             <td>
                 <a href="{{ url('bpi_admin_category_edit',{'id':item.id}) }}">Edit</a>
+                {% if item.disabled %}
+                <a href="{{ url('bpi_admin_category_enable',{'id':item.id}) }}">Enable</a>
+                {% else %}
+                <a href="{{ url('bpi_admin_category_disable',{'id':item.id}) }}">Disable</a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}
