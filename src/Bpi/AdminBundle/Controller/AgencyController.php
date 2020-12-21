@@ -4,6 +4,8 @@ namespace Bpi\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\Request;
 
 class AgencyController extends Controller
 {
@@ -19,11 +21,48 @@ class AgencyController extends Controller
     /**
      * @Template("BpiAdminBundle:Agency:index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
+        $formBuilder = $this->createFormBuilder();
+
+        $formBuilder->add('deleted', 'choice', [
+            'choices' => [
+                -1 => 'All',
+                1 => 'Yes',
+                0 => 'No',
+            ]
+        ]);
+        $formBuilder->add('internal', 'choice', [
+            'choices' => [
+                -1 => 'All',
+                1 => 'Yes',
+                0 => 'No',
+            ]
+        ]);
+
+        $form = $formBuilder->getForm();
+
+        $deletedFilter = null;
+        $internalFilter = null;
+        if ($request->isMethod('POST')) {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+                $agencyFilter = $form->getData();
+
+                if (-1 !== $agencyFilter['deleted']) {
+                    $deletedFilter = $agencyFilter['deleted'];
+                }
+
+                if (-1 !== $agencyFilter['internal']) {
+                    $internalFilter = $agencyFilter['internal'];
+                }
+            }
+        }
+
         $param = $this->getRequest()->query->get('sort');
         $direction = $this->getRequest()->query->get('direction');
-        $query = $this->getRepository()->listAll($param, $direction);
+        $query = $this->getRepository()->listAll($param, $direction, $deletedFilter, $internalFilter);
 
         $knpPaginator = $this->get('knp_paginator');
 
@@ -37,31 +76,10 @@ class AgencyController extends Controller
             )
         );
 
-        return array('pagination' => $pagination);
-    }
-
-    /**
-     * Show deleted agencies
-     *
-     * @Template("BpiAdminBundle:Agency:index.html.twig")
-     */
-    public function deletedAction()
-    {
-        $query = $this->getRepository()->listAll(true);
-
-        $paginator = $this->get('knp_paginator');
-        $pagination = $paginator->paginate(
-            $query,
-            $this->get('request')->query->get('page', 1),
-            5
-        );
-
-        return array(
+        return [
             'pagination' => $pagination,
-            'delete_lable' => 'Undelete',
-            'delete_url' => 'bpi_admin_agency_restore',
-            'purge' => 1,
-        );
+            'form' => $form->createView()
+        ];
     }
 
     /**
@@ -177,7 +195,7 @@ class AgencyController extends Controller
         $this->getRepository()->purge($id);
 
         return $this->redirect(
-            $this->generateUrl("bpi_admin_agency_deleted", array())
+            $this->generateUrl("bpi_admin_agency", array())
         );
     }
 

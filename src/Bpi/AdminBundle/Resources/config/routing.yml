@@ -30,10 +30,6 @@ bpi_admin_agency_restore:
     pattern: /agency/restore/{id}
     defaults: { _controller: BpiAdminBundle:Agency:restore }
 
-bpi_admin_agency_deleted:
-    pattern: /agency/deleted
-    defaults: { _controller: BpiAdminBundle:Agency:deleted }
-
 bpi_admin_node:
     pattern:  /node
     defaults: { _controller: BpiAdminBundle:Node:index }
