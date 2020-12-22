@@ -304,7 +304,7 @@ class NodeController extends Controller
         $assets = array();
         foreach ($nodeAssets as $asset) {
             $asset['url'] = $this->generateUrl('get_asset', array(
-                'filename' => $asset['file'],
+                'filename' => isset($asset['name']) ? $asset['name'] : $asset['file'],
                 'extension' => $asset['extension'],
             ));
             if (in_array($asset['extension'], $imageExtensions)) {
