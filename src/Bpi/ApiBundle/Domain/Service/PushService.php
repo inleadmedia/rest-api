@@ -2,6 +2,7 @@
 namespace Bpi\ApiBundle\Domain\Service;
 
 
+use Bpi\ApiBundle\Domain\Entity\Tag;
 use Doctrine\Common\Persistence\ObjectManager;
 
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
@@ -61,6 +62,7 @@ class PushService
         ResourceBuilder $resource_builder,
         $category,
         $audience,
+        $tags,
         Profile $profile,
         Params $params
     ) {
@@ -108,6 +110,13 @@ class PushService
         );
         $builder->audience($audience);
 
+        $tags = $this->prepareTags($tags);
+        if (!empty($tags)) {
+            foreach ($tags as $tag) {
+                $builder->tag($tag);
+            }
+        }
+
         $node = $builder->build();
         $log = new History($node, $author->getAgencyId(), new \DateTime(), 'push');
 
@@ -118,6 +127,50 @@ class PushService
         $this->manager->getRepository('BpiApiBundle:Entity\Facet')->prepareFacet($node);
 
         return $node;
+    }
+
+    /**
+     * Prepare tags.
+     *
+     * @param $tags
+     *
+     * @return array
+     */
+    private function prepareTags($tags)
+    {
+        if (empty($tags)) {
+            return [];
+        }
+
+        $tags = explode(',', $tags);
+        $readyTags = [];
+
+        /** @var \Bpi\ApiBundle\Domain\Repository\TagRepository $tagRepository */
+        $tagRepository = $this
+            ->manager
+            ->getRepository('BpiApiBundle:Entity\Tag');
+
+        foreach ($tags as $tag) {
+            $tag = trim($tag);
+            $savedTag = $tagRepository
+                ->findOneBy(['tag' => $tag]);
+
+            if (!$savedTag) {
+                $newTag = new Tag();
+                $newTag->setTag($tag);
+
+                $this->manager->persist($newTag);
+
+                $readyTags[] = $newTag;
+                continue;
+            }
+
+            $readyTags[] = $savedTag;
+        }
+
+        $this->manager->flush();
+
+        return $readyTags;
     }
 
     /**

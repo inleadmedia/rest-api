@@ -255,16 +255,11 @@ class FacetRepository extends DocumentRepository
         }
 
         foreach ($changes as $changedValue => $changed) {
-            if (is_array($changed) && isset($changed['newValue']) && isset($changed['oldValue'])) {
-                $qb->field('facetData.' . $changedValue)->set($changed['newValue']);
-                $qb->field('facetData.' . $changedValue)->equals($changed['oldValue']);
-            }
-
-            if ('agency_id' === $changedValue && is_string($changed)) {
-                $qb->field('facetData.' . $changedValue)->equals($changed);
-            } else {
-                $qb->field('facetData.' . $changedValue)->set($changed['newValue']);
-                $qb->field('facetData.' . $changedValue)->equals($changed['oldValue']);
+            if ('tags' === $changedValue) {
+                $qb->field('facetData.'.$changedValue)->set($changed);
+            } elseif (is_array($changed) && isset($changed['newValue']) && isset($changed['oldValue'])) {
+                $qb->field('facetData.'.$changedValue)->set($changed['newValue']);
+                $qb->field('facetData.'.$changedValue)->equals($changed['oldValue']);
             }
         }
 

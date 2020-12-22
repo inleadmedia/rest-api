@@ -221,6 +221,20 @@ class Resource implements IPresentable
         $this->teaser = $teaser;
     }
 
+    /**
+     * Set body
+     *
+     * @param string $body
+     *
+     * @return self
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
     public function addAsset($asset)
     {
         $this->assets[] = $asset;
@@ -284,5 +298,10 @@ class Resource implements IPresentable
     public function getAssets()
     {
         return $this->assets;
+    }
+
+    public function getMaterials()
+    {
+        return $this->materials;
     }
 }

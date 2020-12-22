@@ -118,4 +118,46 @@ class Author implements \Bpi\ApiBundle\Transform\IPresentable
     {
         return $this->lastname;
     }
+
+    /**
+     * Set agencyId
+     *
+     * @param string $agencyId
+     *
+     * @return self
+     */
+    public function setAgencyId($agencyId)
+    {
+        $this->agency_id = $agencyId;
+
+        return $this;
+    }
+
+    /**
+     * Set firstname
+     *
+     * @param string $firstname
+     *
+     * @return self
+     */
+    public function setFirstname($firstname)
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    /**
+     * Set lastname
+     *
+     * @param string $lastname
+     *
+     * @return self
+     */
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
 }

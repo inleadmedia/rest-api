@@ -11,7 +11,6 @@ use Bpi\ApiBundle\Domain\ValueObject\AgencyId;
 use Bpi\ApiBundle\Transform\IPresentable;
 use Bpi\RestMediaTypeBundle\Document;
 use Bpi\ApiBundle\Transform\Comparator;
-use Bpi\RestMediaTypeBundle\XmlResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Node implements IPresentable
@@ -177,6 +176,13 @@ class Node implements IPresentable
                 (null === $this->getSyndications()) ? 0 : $this->getSyndications()
             )
         );
+
+        $tags = $document->createTagsSection();
+        foreach ($this->tags as $tag) {
+            $serializedTag = new \Bpi\RestMediaTypeBundle\Element\Tag($tag->getTag());
+            $tags->addTag($serializedTag);
+        }
+        $entity->setTags($tags);
 
         $this->profile->transform($document);
         $this->resource->transform($document);
@@ -354,6 +360,11 @@ class Node implements IPresentable
     public function setCategory(Category $category)
     {
         $this->category = $category;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**
