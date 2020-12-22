@@ -177,8 +177,16 @@ class NodeController extends Controller
     public function detailsAction($id)
     {
         $node = $this->getRepository()->find($id);
+
+        $assets = array();
+        $nodeAssets = $node->getResource()->getAssets();
+        if (!empty($nodeAssets)) {
+            $assets = $this->prepareAssets($nodeAssets);
+        }
+
         return array(
             'node' => $node,
+            'assets' => $assets,
         );
     }
 
