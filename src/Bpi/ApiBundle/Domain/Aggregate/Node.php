@@ -14,7 +14,7 @@ use Bpi\ApiBundle\Transform\Comparator;
 use Bpi\RestMediaTypeBundle\XmlResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class Node implements IPresentable
+class Node implements IPresentable, TitleWrapperInterface
 {
     protected $id;
     protected $ctime;

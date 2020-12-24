@@ -4,6 +4,7 @@ namespace Bpi\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints;
@@ -71,6 +72,15 @@ class RestController extends FOSRestController
                 $this->get('router')->generate('statistics', array(), true),
                 array('dateFrom', 'dateTo'),
                 'Statistics for date range'
+            )
+        );
+
+        $hypermedia->addQuery(
+            $document->createQuery(
+                'statisticsExtended',
+                $this->get('router')->generate('statistics_extended', array(), true),
+                array('from', 'to', 'amount', 'action', 'aggregateField', 'contentOwnerAgency'),
+                'Statistics '
             )
         );
 
@@ -400,6 +410,47 @@ class RestController extends FOSRestController
             default:
                 throw new HttpException(404, 'Requested entity does not exists');
         }
+    }
+
+    /**
+     * Fetches extended statistics.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @Rest\Get("/statisticsExtended")
+     * @Rest\View(statusCode="200")
+     *
+     * @return \Bpi\RestMediaTypeBundle\XmlResponse
+     *   Response object.
+     */
+    public function statisticsExtendedAction(Request $request) {
+        $toIsValid = strtotime($request->get('to'));
+        $dateTo = new \DateTime($toIsValid ? $request->get('to') : date(DATE_ISO8601));
+
+        $fromIsValid = strtotime($request->get('from'));
+        $dateFrom = new \DateTime($fromIsValid ? $request->get('from') : date(DATE_ISO8601));
+
+        $numEntries = $request->get('amount', 10);
+        $action = $request->get('action', 'syndicate');
+        $aggregate = $request->get('aggregateField', 'agency');
+        $aggregate = in_array($aggregate, ['agency', 'node']) ? $aggregate : 'agency';
+        $ownerAgency = $request->get('contentOwnerAgency', '');
+
+        /** @var \Bpi\ApiBundle\Domain\Repository\HistoryRepository $repository */
+        $repository = $this->getRepository('BpiApiBundle:Entity\History');
+        /** @var \Bpi\ApiBundle\Transform\Presentation $transform */
+        $transform = $this->get('bpi.presentation.transformer');
+
+        $statExtended = $repository->getActivity(
+            $dateFrom,
+            $dateTo,
+            $action,
+            $aggregate,
+            !empty($ownerAgency) ? explode(',', $ownerAgency) : [],
+            $numEntries
+        );
+
+        return $transform->transform($statExtended);
     }
 
     /**
