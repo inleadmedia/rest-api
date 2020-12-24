@@ -296,7 +296,7 @@ class NodeController extends Controller
                         'required' => false
                     )
                 )
-            );;
+            );
 
         if (!$new) {
             $formBuilder->add('deleted', 'checkbox', array('required' => false));
