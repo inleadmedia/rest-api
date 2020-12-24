@@ -622,7 +622,7 @@ class RestController extends FOSRestController
                 return $this->get("bpi.presentation.transformer")->transform($node);
             }
             $node = $this->get('domain.push_service')
-              ->push($author, $resource, $request->get('category'), $request->get('audience'), $profile, $params);
+              ->push($author, $resource, $request->get('category'), $request->get('audience'), $request->get('tags'), $profile, $params);
 
             $facets = $facetRepository->prepareFacet($node);
 

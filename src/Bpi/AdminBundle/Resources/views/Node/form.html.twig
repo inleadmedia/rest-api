@@ -1,5 +1,10 @@
 {% extends "BpiAdminBundle::layout.html.twig" %}
 
+{% block javascript %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/bpiadmin/js/nodeEdit.js') }}"></script>
+{% endblock %}
+
 {% block content %}
 {% include 'BpiAdminBundle:Node:nav.html.twig' %}
 
@@ -31,6 +36,18 @@
             <h3>Node vocabularies</h3>
             {{ form_row(form.category) }}
             {{ form_row(form.audience) }}
+
+            <p>Tags</p>
+            <ul class="tags" data-prototype="{{ form_widget(form.tags.vars.prototype)|e }}">
+                {% for tag in form.tags %}
+                    <li>{{ form_row(tag.tag) }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            {{ form_row(form.deleted) }}
         </div>
     </div>
     <div class="row">

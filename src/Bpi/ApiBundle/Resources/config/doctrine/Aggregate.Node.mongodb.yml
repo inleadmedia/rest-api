@@ -53,3 +53,9 @@ Bpi\ApiBundle\Domain\Aggregate\Node:
       reference: true
       type: one
       targetDocument: Bpi\ApiBundle\Domain\Entity\Audience
+
+    tags:
+      reference: true
+      type: many
+      targetDocument: Bpi\ApiBundle\Domain\Entity\Tag
+      cascade: all
