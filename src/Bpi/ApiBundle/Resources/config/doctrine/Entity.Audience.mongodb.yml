@@ -8,3 +8,5 @@ Bpi\ApiBundle\Domain\Entity\Audience:
       id: true
     audience:
       type: string
+    disabled:
+      type: boolean

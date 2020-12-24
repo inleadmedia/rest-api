@@ -12,6 +12,9 @@
         <tr>
             <th{% if pagination.isSorted('resource.title') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Title', 'resource.title', {'defaultDirection' : 'asc'}) }}</th>
             <th{% if pagination.isSorted('resource.agencyId') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Agency ID', 'author.agency_id', {'defaultDirection' : 'asc'}) }}</th>
+            <th>Category</th>
+            <th>Audience</th>
+            <th{% if pagination.isSorted('ctime') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Pushed', 'ctime', {'defaultDirection' : 'asc'}) }}</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -20,6 +23,9 @@
     <tr>
         <td>{{ item.title }}</td>
         <td>{{ item.agencyId }}</td>
+        <td>{{ item.category.category }}</td>
+        <td>{{ item.audience.audience }}</td>
+        <td>{{ item.ctime.format('d/m/Y H:i') }}</td>
         <td>
             <a href="{{ url('bpi_admin_node_details',{'id':item.id}) }}">Details</a>
             <a href="{{ url('bpi_admin_node_edit',{'id':item.id}) }}">Edit</a>

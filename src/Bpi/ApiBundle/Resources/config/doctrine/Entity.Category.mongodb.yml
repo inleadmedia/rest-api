@@ -8,3 +8,5 @@ Bpi\ApiBundle\Domain\Entity\Category:
       id: true
     category:
       type: string
+    disabled:
+      type: boolean

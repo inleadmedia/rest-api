@@ -186,8 +186,16 @@ class NodeController extends Controller
     public function detailsAction($id)
     {
         $node = $this->getRepository()->find($id);
+
+        $assets = array();
+        $nodeAssets = $node->getResource()->getAssets();
+        if (!empty($nodeAssets)) {
+            $assets = $this->prepareAssets($nodeAssets);
+        }
+
         return array(
             'node' => $node,
+            'assets' => $assets,
         );
     }
 
@@ -317,7 +325,7 @@ class NodeController extends Controller
         $assets = array();
         foreach ($nodeAssets as $asset) {
             $asset['url'] = $this->generateUrl('get_asset', array(
-                'filename' => $asset['file'],
+                'filename' => isset($asset['name']) ? $asset['name'] : $asset['file'],
                 'extension' => $asset['extension'],
             ));
             if (in_array($asset['extension'], $imageExtensions)) {
