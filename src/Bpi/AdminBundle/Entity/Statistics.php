@@ -12,18 +12,12 @@ class Statistics
 
     public function getDateFrom()
     {
-        if ($this->dateFrom) {
-            return $this->dateFrom->format('Y-m-d');
-        }
-        return null;
+        return $this->dateFrom;
     }
 
     public function getDateTo()
     {
-        if ($this->dateTo) {
-            return $this->dateTo->format('Y-m-d');
-        }
-        return null;
+        return $this->dateTo;
     }
 
     public function getAgency()
@@ -33,12 +27,14 @@ class Statistics
 
     public function setDateFrom($date)
     {
-        $this->dateFrom = $date;
+        $this->dateFrom = new \DateTime();
+        $this->dateFrom->setTimestamp(strtotime($date));
     }
 
     public function setDateTo($date)
     {
-        $this->dateTo = $date;
+        $this->dateTo = new \DateTime();
+        $this->dateTo->setTimestamp(strtotime($date));
     }
 
     public function setAgency($agency)
