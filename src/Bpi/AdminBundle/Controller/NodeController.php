@@ -2,6 +2,7 @@
 
 namespace Bpi\AdminBundle\Controller;
 
+use Bpi\ApiBundle\Domain\Form\TagType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
@@ -54,13 +55,13 @@ class NodeController extends Controller
         $knpPaginator = $this->get('knp_paginator');
 
         $pagination = $knpPaginator->paginate(
-          $query,
-          $this->get('request')->query->get('page', 1),
-          50,
-          array(
-            'defaultSortFieldName' => 'resource.title',
-            'defaultSortDirection' => 'desc',
-          )
+            $query,
+            $this->get('request')->query->get('page', 1),
+            50,
+            array(
+                'defaultSortFieldName' => 'resource.title',
+                'defaultSortDirection' => 'desc',
+            )
         );
 
         return array(
@@ -87,7 +88,6 @@ class NodeController extends Controller
                     $this->generateUrl('bpi_admin_node')
                 );
             }
-
         }
 
         return array(
@@ -101,6 +101,7 @@ class NodeController extends Controller
      */
     public function editAction($id)
     {
+        /** @var \Bpi\ApiBundle\Domain\Aggregate\Node $node */
         $node = $this->getRepository()->find($id);
         $form = $this->createNodeForm($node);
         $request = $this->getRequest();
@@ -113,6 +114,13 @@ class NodeController extends Controller
             $changeAuthor = $changeAuthorFirstName || $changeAuthorLastName;
             $changeCategory = $node->getCategory()->getId() != $submittedNode['category'];
             $changeAudience = $node->getAudience()->getId() != $submittedNode['audience'];
+
+            $submittedTags = [];
+            if (!empty($submittedNode['tags']) && is_array($submittedNode['tags'])) {
+                foreach ($submittedNode['tags'] as $tag) {
+                    $submittedTags[] = $tag['tag'];
+                }
+            }
 
             $checks = array(
                 'author' => array(
@@ -142,6 +150,7 @@ class NodeController extends Controller
                 }
             }
             $changes['nodeId'] = $node->getId();
+            $changes['tags'] = $submittedTags;
 
             $form->bind($request);
             if ($form->isValid()) {
@@ -159,9 +168,9 @@ class NodeController extends Controller
         }
 
         $assets = array();
-        $nodeAssets = $node->getAssets();
-        if(!empty($nodeAssets)) {
-            $assets = $this->prepareAssets($nodeAssets->getCollection());
+        $nodeAssets = $node->getResource()->getAssets();
+        if (!empty($nodeAssets)) {
+            $assets = $this->prepareAssets($nodeAssets);
         }
 
         return array(
@@ -177,8 +186,16 @@ class NodeController extends Controller
     public function detailsAction($id)
     {
         $node = $this->getRepository()->find($id);
+
+        $assets = array();
+        $nodeAssets = $node->getResource()->getAssets();
+        if (!empty($nodeAssets)) {
+            $assets = $this->prepareAssets($nodeAssets);
+        }
+
         return array(
             'node' => $node,
+            'assets' => $assets,
         );
     }
 
@@ -276,7 +293,18 @@ class NodeController extends Controller
                     'property' => 'audience'
                 )
             )
-        ;
+            ->add(
+                'tags',
+                'collection',
+                array(
+                    'type' => new TagType(),
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                    'options' => array(
+                        'required' => false
+                    )
+                )
+            );
 
         if (!$new) {
             $formBuilder->add('deleted', 'checkbox', array('required' => false));
@@ -294,9 +322,13 @@ class NodeController extends Controller
     protected function prepareAssets($nodeAssets)
     {
         $imageExtensions = array('jpg', 'jpeg', 'png', 'gif');
-        $assets =array();
+        $assets = array();
         foreach ($nodeAssets as $asset) {
-            if (in_array($asset->getExtension(), $imageExtensions)){
+            $asset['url'] = $this->generateUrl('get_asset', array(
+                'filename' => isset($asset['name']) ? $asset['name'] : $asset['file'],
+                'extension' => $asset['extension'],
+            ));
+            if (in_array($asset['extension'], $imageExtensions)) {
                 $assets['images'][] = $asset;
             } else {
                 $assets['documents'][] = $asset;
@@ -304,6 +336,5 @@ class NodeController extends Controller
         }
 
         return $assets;
-
     }
 }

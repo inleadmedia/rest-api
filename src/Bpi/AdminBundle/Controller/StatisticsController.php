@@ -22,38 +22,77 @@ class StatisticsController extends Controller
      */
     public function indexAction()
     {
+        /** @var \Bpi\ApiBundle\Domain\Aggregate\Agency[] $agencies */
+        $agencies = $this
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('BpiApiBundle:Aggregate\Agency')
+            ->findAll();
+
+        $agenciesChoice = [];
+        /** @var \Bpi\ApiBundle\Domain\Aggregate\Agency $agency */
+        foreach ($agencies as $agency) {
+            $label = "{$agency->getName()} ({$agency->getPublicId()})";
+            $agenciesChoice[$label] = $agency->getPublicId();
+        }
 
         $request = $this->getRequest();
-        $statisitcs = null;
+        $statistics = null;
 
         $data = new Statistics();
         $form = $this->createStatisticsForm($data);
 
         if ($request->isMethod('POST')) {
             $form->bind($request);
+
             if ($form->isValid()) {
-                $statisitcs = $this->getRepository()
-                    ->getStatisticsByDateRangeForAgency(
-                        $data->getDateFrom(),
-                        $data->getDateTo(),
-                        $data->getAgency()
-                    )->getStats();
+                /** @var \Bpi\ApiBundle\Domain\Repository\AgencyRepository $agencyRepository */
+                $agencyRepository = $this
+                    ->get('doctrine.odm.mongodb.document_manager')
+                    ->getRepository('BpiApiBundle:Aggregate\Agency');
+                $qb = $agencyRepository->createQueryBuilder();
+
+                $qb->field('public_id')->in($request->get('agencies', []));
+
+                $selectedAgencies = $qb->getQuery()->execute();
+
+                $statistics = [];
+                if ($selectedAgencies->count()) {
+                    $agencyIds = [];
+                    foreach ($selectedAgencies as $selectedAgency) {
+                        $agencyIds[] = $selectedAgency->getPublicId();
+                    }
+
+                    $data = $form->getData();
+                    $data->getDateTo()->modify('+23 hours 59 minutes');
+
+                    $statistics = $this->getRepository()
+                        ->getStatisticsByDateRangeForAgency(
+                            $data->getDateFrom(),
+                            $data->getDateTo(),
+                            $agencyIds
+                        )->getStats();
+                }
             }
         }
 
         return array(
             'form' => $form->createView(),
-            'statistics'=> $statisitcs,
+            'agencies' => $agencies,
+            'selected_agencies' => $request->get('agencies', []),
+            'statistics'=> $statistics,
         );
     }
 
     private function createStatisticsForm($data)
     {
-        $formBuilder = $this->createFormBuilder($data)
-            ->add('dateFrom', 'date', array('widget' => 'single_text'))
-            ->add('dateTo', 'date', array('widget' => 'single_text'))
-            ->add('agency', 'text', array('required' => false))
-        ;
+        $formBuilder = $this
+            ->createFormBuilder($data)
+            ->add('dateFrom', 'text', array(
+                'label' => 'From',
+            ))
+            ->add('dateTo', 'text', array(
+                'label' => 'To',
+            ));
 
         return $formBuilder->getForm();
     }

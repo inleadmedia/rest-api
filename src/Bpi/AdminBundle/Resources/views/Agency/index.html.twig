@@ -9,11 +9,21 @@
 {% if purge is not defined %}
     {% set purge = 0 %}
 {% endif %}
+    <form action="{{ path(app.request.attributes.get('_route')) }}" method="post" {{ form_enctype(form) }}>
+
+    {{ form_widget(form) }}
+
+    <div>
+        <input type="submit" class="btn" value="Filter" />
+    </div>
+</form>
 <table class="table table-striped table-hover">
     <thead>
         <tr>
             <th{% if pagination.isSorted('public_id') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Public ID', 'public_id', {'defaultDirection' : 'asc'}) }}</th>
             <th{% if pagination.isSorted('name') %} class="sorted"{% endif %}> {{ knp_pagination_sortable(pagination, 'Name', 'name', {'defaultDirection' : 'asc'}) }}</th>
+            <th>Internal</th>
+            <th>Deleted</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -22,12 +32,16 @@
         <tr>
             <td>{{ item.publicId }}</td>
             <td>{{ item.name }}</td>
+            <td>{{ item.internal ? 'Yes' : 'No' }}</td>
+            <td>{{ item.deleted ? 'Yes' : 'No' }}</td>
             <td>
                 <a href="{{ url('bpi_admin_agency_details',{'id':item.id}) }}">Details</a>
                 <a href="{{ url('bpi_admin_agency_edit',{'id':item.id}) }}">Edit</a>
-                <a href="{{ url(delete_url,{'id':item.id}) }}">{{delete_lable}}</a>
-                {% if purge == 1 %}
+                {% if item.deleted == 1 %}
+                    <a href="{{ url('bpi_admin_agency_restore', {'id':item.id}) }}">Restore</a>
                     <a href="{{ url('bpi_admin_agency_purge', {'id':item.id}) }}">Purge</a>
+                {% else %}
+                    <a href="{{ url('bpi_admin_agency_delete',{'id':item.id}) }}">Delete</a>
                 {% endif %}
             </td>
         </tr>

@@ -74,8 +74,10 @@ class FakeData implements FixtureInterface
             ->title('Ti tegnefilm for de mindste på filmstriben')
             ->ctime(new \DateTime("-10 day"))
             ->copyleft(new Copyleft(''))
-            ->addMaterial('100200:12345678')
-            ->addMaterial('100200:87654321')
+            ->addMaterial('123-100200:12345678')
+            ->addMaterial('123-100200:87654321')
+            ->url('http://example.com/article')
+            ->data(json_encode(array('subject' => 'computer science')))
         ;
 
         $builder = new ProfileBuilder();

@@ -49,6 +49,8 @@ class Resource implements IExtractor
             ->title($entity->property('title')->getValue())
             ->body($entity->property('body')->getValue())
             ->teaser($entity->property('teaser')->getValue())
+            ->url($entity->property('url')->getValue())
+            ->data($entity->property('data')->getValue())
             ->ctime(new \DateTime($entity->property('ctime')->getValue()))
         ;
     }

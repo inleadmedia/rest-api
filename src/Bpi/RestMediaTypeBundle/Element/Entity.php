@@ -53,6 +53,11 @@ class Entity implements HasLinks
     protected $entities;
 
     /**
+     * @Serializer\Type("Bpi\RestMediaTypeBundle\Element\Assets")
+     */
+    protected $assets;
+
+    /**
      * @Serializer\Type("Bpi\RestMediaTypeBundle\Element\Hypermedia")
      */
     protected $hypermedia;
@@ -70,6 +75,7 @@ class Entity implements HasLinks
     {
         $this->type = $type;
         $this->name = $name ? $name : self::NONAME;
+        $this->assets = new Assets();
     }
 
     /**
@@ -97,8 +103,9 @@ class Entity implements HasLinks
      */
     public function addProperties(array $properties)
     {
-        foreach ($properties as $property)
+        foreach ($properties as $property) {
             $this->addProperty($property);
+        }
     }
 
     /**
@@ -120,18 +127,20 @@ class Entity implements HasLinks
     public function property($name)
     {
         $property = array();
-        foreach ($this->properties as $prop)
-        {
-            if ($prop->getName() == $name)
+        foreach ($this->properties as $prop) {
+            if ($prop->getName() == $name) {
                 $property[] = $prop;
+            }
         }
 
         $count = count($property);
-        if ($count == 0)
+        if ($count == 0) {
             return null;
+        }
 
-        if ($count == 1)
+        if ($count == 1) {
             return current($property);
+        }
 
         return $property;
     }
@@ -156,14 +165,12 @@ class Entity implements HasLinks
      */
     public function hasProperty($name, $type = null)
     {
-        foreach ($this->properties as $key => $prop)
-        {
-            if ($prop->getName() == $name)
-            {
-                if (!is_null($type))
-                {
-                    if (!$prop->typeOf($type))
+        foreach ($this->properties as $key => $prop) {
+            if ($prop->getName() == $name) {
+                if (!is_null($type)) {
+                    if (!$prop->typeOf($type)) {
                         return false;
+                    }
                 }
 
                 return true;
@@ -224,8 +231,9 @@ class Entity implements HasLinks
     {
         $props = array();
         foreach ($this->properties as $property) {
-            if (preg_match($regexp, $property->getName(), $matches))
+            if (preg_match($regexp, $property->getName(), $matches)) {
                 $props[$matches[1]] = $property;
+            }
         }
         return $props;
     }
@@ -249,10 +257,21 @@ class Entity implements HasLinks
     {
         $props = array();
         foreach ($this->properties as $property) {
-            if ($property->typeOf($type))
+            if ($property->typeOf($type)) {
                 $props[$property->getName()] = $property;
+            }
         }
         return $props;
+    }
+
+    /**
+     * Adds file to assets array.
+     *
+     * @param mixed $data
+     */
+    public function addAsset($data)
+    {
+        $this->assets->add(new File($data));
     }
 
     /**

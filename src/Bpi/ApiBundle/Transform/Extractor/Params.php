@@ -35,6 +35,7 @@ class Params implements IExtractor
         $params = new DomainParams();
         $params->add(new Editable($entity->property('editable')->getValue()));
         $params->add(new Authorship($entity->property('authorship')->getValue()));
+
         return $params;
     }
 }

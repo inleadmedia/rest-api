@@ -33,9 +33,11 @@ class AgencyRepository extends DocumentRepository implements UserProviderInterfa
      * @param string $param
      * @param string $direction
      * @param bool $deleted
+     * @param bool $internal
+     *
      * @return array
      */
-    public function listAll($param = null, $direction = null, $deleted = false)
+    public function listAll($param = null, $direction = null, $deleted = null, $internal = null)
     {
         $qb = $this->createQueryBuilder();
 
@@ -43,7 +45,13 @@ class AgencyRepository extends DocumentRepository implements UserProviderInterfa
             $qb->sort($param, $direction);
         }
 
-        $qb->field('deleted')->equals($deleted);
+        if (null !== $deleted) {
+            $qb->field('deleted')->equals((boolean)$deleted);
+        }
+
+        if (null !== $internal) {
+            $qb->field('internal')->equals((boolean)$internal);
+        }
 
         return $qb;
     }

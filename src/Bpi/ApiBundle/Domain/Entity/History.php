@@ -5,6 +5,10 @@ use Bpi\ApiBundle\Domain\Aggregate\Node;
 
 class History
 {
+    const ACTION_PUSH = 'push';
+
+    const ACTION_SYNDICATE = 'syndicate';
+
     private $id;
     /**
      *
