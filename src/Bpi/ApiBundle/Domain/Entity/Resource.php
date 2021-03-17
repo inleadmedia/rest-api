@@ -38,6 +38,9 @@ class Resource implements IPresentable
     protected $category;
     protected $audience;
 
+    protected $url;
+    protected $data;
+
     /**
      *
      * @param string $title
@@ -62,9 +65,10 @@ class Resource implements IPresentable
         array $assets = array(),
         Filesystem $filesystem,
         $router,
-        array $materials = array()
-    )
-    {
+        array $materials = array(),
+        $url,
+        $data
+    ) {
         $this->title = $title;
         $this->body = new Resource\Body($body, $filesystem, $router);
         $this->body->rebuildInlineAssets();
@@ -78,6 +82,8 @@ class Resource implements IPresentable
         $this->materials = $materials;
         $this->category = $category;
         $this->audience = $audience;
+        $this->url = $url;
+        $this->data = $data;
     }
 
     /**
@@ -87,9 +93,10 @@ class Resource implements IPresentable
      * @param  AgencyID $syndicator
      * @return void
      */
-    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator) {
+    public function defineAgencyContext(AgencyId $owner, AgencyId $syndicator)
+    {
         $syndication_materials = array();
-        foreach($this->materials as $material) {
+        foreach ($this->materials as $material) {
             if ($material->isLibraryEquals($owner)) {
                 $syndication_materials[] = $material->reassignToAgency($syndicator);
             } else {
@@ -108,12 +115,14 @@ class Resource implements IPresentable
      */
     public function isSimilar(Resource $resource)
     {
-        if ($this->body == $resource->body)
+        if ($this->body == $resource->body) {
             return true;
+        }
 
         similar_text(strip_tags($this->body), strip_tags($resource->body), $similarity);
-        if ($similarity > 50)
+        if ($similarity > 50) {
             return true;
+        }
 
         return false;
     }
@@ -130,14 +139,6 @@ class Resource implements IPresentable
             $document->appendEntity($entity);
         }
 
-        // Add assets to presentation.
-        $i = 1;
-        foreach ($this->assets as $asset) {
-            $assetUrl = $document->generateRoute("get_asset", array('filename'=> $asset['file'], 'extension'=> $asset['extension']), true);
-            $entity->addProperty($document->createProperty('asset' . $i, 'asset', $assetUrl));
-            $i++;
-        }
-
         $copyleft = '<p>' . $this->copyleft . '</p>';
 
         $entity->addProperty($document->createProperty('title', 'string', $this->title));
@@ -145,9 +146,10 @@ class Resource implements IPresentable
         $entity->addProperty($document->createProperty('teaser', 'string', $this->teaser));
         $entity->addProperty($document->createProperty('creation', 'dateTime', $this->ctime));
         $entity->addProperty($document->createProperty('type', 'string', $this->type));
+        $entity->addProperty($document->createProperty('url', 'string', $this->url));
+        $entity->addProperty($document->createProperty('data', 'string', $this->data));
 
-        foreach ($this->materials as $material)
-        {
+        foreach ($this->materials as $material) {
             $entity->addProperty($document->createProperty('material', 'string', (string) $material));
         }
     }
@@ -219,8 +221,87 @@ class Resource implements IPresentable
         $this->teaser = $teaser;
     }
 
+    /**
+     * Set body
+     *
+     * @param string $body
+     *
+     * @return self
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
     public function addAsset($asset)
     {
         $this->assets[] = $asset;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return self
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string $body
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /*
+     * Set data
+     *
+     * @param string $data
+     * @return self
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /*
+     * Get data
+     *
+     * @return string $body
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return \Bpi\ApiBundle\Domain\Entity\Resource\Body
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets()
+    {
+        return $this->assets;
+    }
+
+    public function getMaterials()
+    {
+        return $this->materials;
     }
 }

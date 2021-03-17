@@ -157,7 +157,20 @@ class FacetRepository extends DocumentRepository
                 $facets['agency_id'][$facet['_id']['facetValue']]['agencyName'] = $agency->getName();
                 $facets['agency_id'][$facet['_id']['facetValue']]['count'] = $facet['value'];
             } else {
-                $facets[$facet['_id']['facetName']][$facet['_id']['facetValue']] = $facet['value'];
+                $facet_name = $facet['_id']['facetName'];
+                $facet_value = $facet['_id']['facetValue'];
+                if (is_array($facet_value)) {
+                    foreach ($facet_value as $value) {
+                        // TODO: Tags is an array. Original query does not aggregate it's count.
+                        if (empty($facets[$facet_name][$value])) {
+                            $facets[$facet_name][$value] = 0;
+                        }
+                        $facets[$facet_name][$value]++;
+                    }
+                }
+                else {
+                    $facets[$facet_name][$facet_value] = $facet['value'];
+                }
             }
         }
 
@@ -242,16 +255,11 @@ class FacetRepository extends DocumentRepository
         }
 
         foreach ($changes as $changedValue => $changed) {
-            if (is_array($changed) && isset($changed['newValue']) && isset($changed['oldValue'])) {
-                $qb->field('facetData.' . $changedValue)->set($changed['newValue']);
-                $qb->field('facetData.' . $changedValue)->equals($changed['oldValue']);
-            }
-
-            if ('agency_id' === $changedValue && is_string($changed)) {
-                $qb->field('facetData.' . $changedValue)->equals($changed);
-            } else {
-                $qb->field('facetData.' . $changedValue)->set($changed['newValue']);
-                $qb->field('facetData.' . $changedValue)->equals($changed['oldValue']);
+            if ('tags' === $changedValue) {
+                $qb->field('facetData.'.$changedValue)->set($changed);
+            } elseif (is_array($changed) && isset($changed['newValue']) && isset($changed['oldValue'])) {
+                $qb->field('facetData.'.$changedValue)->set($changed['newValue']);
+                $qb->field('facetData.'.$changedValue)->equals($changed['oldValue']);
             }
         }
 

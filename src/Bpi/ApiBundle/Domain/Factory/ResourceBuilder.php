@@ -18,6 +18,8 @@ class ResourceBuilder
 
     protected $category;
     protected $audience;
+    protected $url;
+    protected $data;
 
     public function __construct(\Gaufrette\Filesystem $filesystem, RouterInterface $router)
     {
@@ -55,6 +57,27 @@ class ResourceBuilder
     public function teaser($teaser)
     {
         $this->teaser = $teaser;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $url
+     * @return \Bpi\ApiBundle\Domain\Factory\ResourceBuilder
+     */
+    public function url($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * @param string $data
+     * @return \Bpi\ApiBundle\Domain\Factory\ResourceBuilder
+     */
+    public function data($data)
+    {
+        $this->data = $data;
         return $this;
     }
 
@@ -154,7 +177,9 @@ class ResourceBuilder
             $this->assets,
             $this->filesystem,
             $this->router,
-            $this->materials
+            $this->materials,
+            $this->url,
+            $this->data
         );
     }
 

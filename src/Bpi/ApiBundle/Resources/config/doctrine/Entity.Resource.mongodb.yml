@@ -20,6 +20,10 @@ Bpi\ApiBundle\Domain\Entity\Resource:
       targetDocument: Bpi\ApiBundle\Domain\ValueObject\Copyleft
     assets:
       type: hash
+    url:
+      type: string
+    data:
+      type: string
   embedMany:
     materials:
       targetDocument: Bpi\ApiBundle\Domain\ValueObject\Material

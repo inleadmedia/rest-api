@@ -18,12 +18,11 @@
                         {% for url, title in navigation %}
                             <li{% if url in route %} class="active"{% endif %}><a href="{{ url(url) }}">{{title}}</a></li>
                         {% endfor %}
-                        <li>
-                            <form name="search-box" action="node" method="get">
-                              <input placeholder="Search" class="search-input" type="text" id="search_node" name="search" value="{{ app.request.get('search')}}">
-                              <input type="submit" value="Search">
-                            </form>
-                        </li>
+                            <li class="pull-right">
+                                <form name="search-box" action="node" method="get" class="navbar-search">
+                                    <input placeholder="Search" class="input-small search-input" type="text" id="search_node" name="search" value="{{ app.request.get('search')}}">
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>

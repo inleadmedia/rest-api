@@ -6,17 +6,14 @@ use Bpi\ApiBundle\Domain\Entity\Resource;
 use Bpi\ApiBundle\Domain\Entity\Author;
 use Bpi\ApiBundle\Domain\Entity\Category;
 use Bpi\ApiBundle\Domain\Entity\Audience;
-use Bpi\ApiBundle\Domain\Aggregate\Params;
 use Bpi\ApiBundle\Domain\ValueObject\Param\Editable;
 use Bpi\ApiBundle\Domain\ValueObject\AgencyId;
 use Bpi\ApiBundle\Transform\IPresentable;
 use Bpi\RestMediaTypeBundle\Document;
 use Bpi\ApiBundle\Transform\Comparator;
-use Bpi\RestMediaTypeBundle\XmlResponse;
 use Doctrine\Common\Collections\ArrayCollection;
-use Gaufrette\File;
 
-class Node implements IPresentable
+class Node implements IPresentable, TitleWrapperInterface
 {
     protected $id;
     protected $ctime;
@@ -48,8 +45,7 @@ class Node implements IPresentable
         Audience $audience,
         ArrayCollection $tags,
         Params $params
-    )
-    {
+    ) {
         $this->author = $author;
         $this->resource = $resource;
         $this->profile = $profile;
@@ -147,7 +143,7 @@ class Node implements IPresentable
             'boolean',
             (int)$this->params
                 ->filter(function ($e) {
-                    if ($e instanceof Editable) return true;
+                    return $e instanceof Editable;
                 })
                 ->first()
                 ->isPositive()
@@ -181,8 +177,37 @@ class Node implements IPresentable
             )
         );
 
+        $tags = $document->createTagsSection();
+        foreach ($this->tags as $tag) {
+            $serializedTag = new \Bpi\RestMediaTypeBundle\Element\Tag($tag->getTag());
+            $tags->addTag($serializedTag);
+        }
+        $entity->setTags($tags);
+
         $this->profile->transform($document);
         $this->resource->transform($document);
+
+        try {
+            $assetsEntity = $document->currentEntity();
+        } catch (\RuntimeException $e) {
+            $assetsEntity = $document->createEntity('entity', 'assets');
+            $document->appendEntity($assetsEntity);
+        }
+
+        foreach ($this->resource->getAssets() as $asset) {
+            $assetName = !empty($asset['name']) ? $asset['name'] : $asset['file'];
+            $asset['name'] = $assetName;
+            $asset['path'] = $document->generateRoute(
+                'get_asset',
+                array(
+                    'filename' => $assetName,
+                    'extension' => $asset['extension']
+                ),
+                true
+            );
+
+            $assetsEntity->addAsset($asset);
+        }
     }
 
     /**
@@ -307,6 +332,26 @@ class Node implements IPresentable
         $this->resource->setBody($body);
     }
 
+    public function getUrl()
+    {
+        return $this->resource->getUrl();
+    }
+
+    public function setUrl($url)
+    {
+        return $this->resource->url($url);
+    }
+
+    public function getData()
+    {
+        return $this->resource->getData();
+    }
+
+    public function setData($data)
+    {
+        return $this->resource->data($data);
+    }
+
     public function setAudience(Audience $audience)
     {
         $this->audience = $audience;
@@ -315,6 +360,11 @@ class Node implements IPresentable
     public function setCategory(Category $category)
     {
         $this->category = $category;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**
@@ -329,11 +379,23 @@ class Node implements IPresentable
         return $this;
     }
 
+    /**
+     * Set ctime
+     *
+     * @param date $ctime
+     * @return self
+     */
     public function setCtime($ctime)
     {
         $this->ctime = $ctime;
+        return $this;
     }
 
+    /**
+     * Get ctime
+     *
+     * @return date $ctime
+     */
     public function getCtime()
     {
         return $this->ctime;
@@ -353,5 +415,13 @@ class Node implements IPresentable
     public function setMtime($mtime)
     {
         $this->mtime = $mtime;
+    }
+
+    /**
+     * @return \Bpi\ApiBundle\Domain\Entity\Resource
+     */
+    public function getResource()
+    {
+        return $this->resource;
     }
 }

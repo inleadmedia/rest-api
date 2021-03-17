@@ -2,6 +2,7 @@
 
 namespace Bpi\AdminBundle\Controller;
 
+use Bpi\ApiBundle\Domain\Entity\Category;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
@@ -47,7 +48,7 @@ class CategoryController extends Controller
     public function newAction()
     {
         $category = new \Bpi\ApiBundle\Domain\Entity\Category();
-        $form = $this->createCategoryForm($category, true);
+        $form = $this->createCategoryForm($category);
         $request = $this->getRequest();
 
         if ($request->isMethod('POST')) {
@@ -88,6 +89,35 @@ class CategoryController extends Controller
         return array(
             'form' => $form->createView(),
             'id' => $id,
+        );
+    }
+
+    public function disableAction($id)
+    {
+        $category = $this->getRepository()->find($id);
+
+        $category->setDisabled(true);
+
+        /** @var \Doctrine\Common\Persistence\ObjectManager $dm */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->flush();
+
+        return $this->redirect(
+            $this->generateUrl('bpi_admin_category')
+        );
+    }
+
+    public function enableAction($id)
+    {
+        $category = $this->getRepository()->find($id);
+        $category->setDisabled(false);
+
+        /** @var \Doctrine\Common\Persistence\ObjectManager $dm */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->flush();
+
+        return $this->redirect(
+            $this->generateUrl('bpi_admin_category')
         );
     }
 

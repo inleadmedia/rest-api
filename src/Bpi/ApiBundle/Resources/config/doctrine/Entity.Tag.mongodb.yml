@@ -1,0 +1,10 @@
+Bpi\ApiBundle\Domain\Entity\Tag:
+  repositoryClass: Bpi\ApiBundle\Domain\Repository\TagRepository
+  collection: Tag
+  type: document
+
+  fields:
+    id:
+      id: true
+    tag:
+      type: string
