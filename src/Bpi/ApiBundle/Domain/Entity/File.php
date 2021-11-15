@@ -5,9 +5,6 @@ namespace Bpi\ApiBundle\Domain\Entity;
 use Bpi\RestMediaTypeBundle\XmlResponse;
 use Gaufrette\Filesystem;
 use Gaufrette\Util;
-use Knp\Bundle\GaufretteBundle\FilesystemMap;
-use Bpi\RestMediaTypeBundle\Document;
-use Guzzle\Http\Client as Guzzle;
 
 /**
  * Bpi\ApiBundle\Domain\Entity\File
@@ -15,7 +12,7 @@ use Guzzle\Http\Client as Guzzle;
 class File
 {
     /**
-     * @var MongoId $id
+     * @var \MongoId $id
      */
     protected $id;
 
@@ -59,7 +56,7 @@ class File
         $this->type = !empty($params['type']) ? $params['type'] : null;
         $this->width = !empty($params['width']) ? $params['width'] : null;
         $this->height = !empty($params['height']) ? $params['height'] : null;
-        $this->filesystem = new \Gaufrette\Filesystem(
+        $this->filesystem = new Filesystem(
             new \Gaufrette\Adapter\Local(
                 $this->getUploadRootDir(),
                 true,
@@ -71,7 +68,7 @@ class File
     /**
      * Get id
      *
-     * @return id $id
+     * @return \MongoId $id
      */
     public function getId()
     {

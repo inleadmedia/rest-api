@@ -63,7 +63,7 @@ class Body
      */
     public function __toString()
     {
-        return $this->getFlattenContent();
+        return (string) $this->getFlattenContent();
     }
 
     /**
@@ -105,13 +105,13 @@ class Body
             $file['path'] = $src[1];
             $file['extension'] = $pathinfo['extension'];
             $file['name'] = $pathinfo['filename'];
-            $file['title'] = $title[1];
-            $file['alt'] = $alt[1];
-            $file['width'] = $width[1];
-            $file['height'] = $height[1];
+            $file['title'] = !empty($title[1]) ? $title[1] : '';
+            $file['alt'] = !empty($alt[1]) ? $alt[1] : '';
+            $file['width'] = !empty($width[1]) ? $width[1] : '';
+            $file['height'] = !empty($height[1]) ? $height[1] : '';
             $file['type'] = 'body';
 
-            $bpi_file = new \Bpi\ApiBundle\Domain\Entity\File($file);
+            $bpi_file = new File($file);
             if ($bpi_file->createFile()) {
                 $this->assets[] = $bpi_file;
                 $tag = str_replace($bpi_file->getExternal(), $bpi_file->getPath(), $match[0]);

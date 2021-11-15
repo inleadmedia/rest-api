@@ -1,5 +1,5 @@
 {
-    "name": "BPI Rest service",
+    "name": "inlead/bpi",
     "description": "",
     "autoload": {
         "psr-4": {
