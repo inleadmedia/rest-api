@@ -119,15 +119,14 @@ class FacetRepository extends DocumentRepository
         $qb = $this->createQueryBuilder('Entity\Facet');
 
         $filteredNodes = $this->iterateTerms($qb);
-        foreach ($filteredNodes as $key => $node) {
+        foreach ($filteredNodes as $node) {
             $nid = $node->getNodeId();
             if (isset($nid) && !empty($nid)) {
                 $nodeIds[] = $nid;
             }
         }
 
-        $qb->map(
-            '
+        $qb->map('
                 function() {
                     for (var i in this.facetData) {
                         if (i == "tags") {
@@ -155,8 +154,7 @@ class FacetRepository extends DocumentRepository
                         }
                     }
                 }
-            '
-        )
+            ')
             ->reduce(
                 '
                 function(key, values) {
@@ -166,8 +164,7 @@ class FacetRepository extends DocumentRepository
                     }
                     return sum;
                 };
-            '
-            );
+            ');
 
 
         $result = $this->iterateTerms($qb);
