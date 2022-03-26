@@ -21,7 +21,7 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": "2.1.10",
-        "twig/twig": "v1.13.0",
+        "twig/twig": "v1.38.0",
         "doctrine/doctrine-bundle": "1.1.*",
         "doctrine/orm": "2.3.2",
         "doctrine/dbal": "2.3.4",
